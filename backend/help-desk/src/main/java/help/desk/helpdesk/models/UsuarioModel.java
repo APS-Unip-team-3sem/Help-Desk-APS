@@ -8,13 +8,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import help.desk.helpdesk.auth.TipoUsuario;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
-
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "usuario")
 @Entity(name = "usuario")
 
@@ -24,7 +33,7 @@ public class UsuarioModel implements UserDetails{
     private long id;
     private String nome;
     private String senha;
-    private TipoUsuario tipousuario;
+    private String tipousuario;
 
 
     public long getId() {
@@ -36,8 +45,9 @@ public class UsuarioModel implements UserDetails{
     public String getSenha() {
         return senha;
     }
+    @Enumerated(EnumType.STRING)
     public String getTipousuario() {
-        return tipousuario.getTipo();
+        return TipoUsuario.valueOf(tipousuario).getTipo();
     }
     
     public void setId(long id) {
@@ -50,7 +60,7 @@ public class UsuarioModel implements UserDetails{
         this.senha = senha;
     }
     
-    public UsuarioModel(String nome, String senha, TipoUsuario tipousuario){
+    public UsuarioModel(String nome, String senha, String tipousuario){
         this.nome = nome;
         this.senha = senha;
         this.tipousuario = tipousuario;
@@ -58,7 +68,7 @@ public class UsuarioModel implements UserDetails{
     // -- Métodos do UserDetails -> Spring Security
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.tipousuario == TipoUsuario.TECNICO) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        if(TipoUsuario.valueOf(tipousuario) == TipoUsuario.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
     @Override

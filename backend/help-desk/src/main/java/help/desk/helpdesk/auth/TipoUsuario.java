@@ -1,8 +1,8 @@
 package help.desk.helpdesk.auth;
 
 public enum TipoUsuario {
-    USUARIO("usuario"),
-    TECNICO("tecnico");
+    USER("user"),
+    ADMIN("admin");
 
     private String tipo;
 
