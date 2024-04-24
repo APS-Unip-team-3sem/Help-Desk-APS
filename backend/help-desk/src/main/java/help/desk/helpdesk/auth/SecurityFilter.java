@@ -11,11 +11,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import help.desk.helpdesk.repositories.UsuarioRepository;
 import help.desk.helpdesk.services.TokenService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.var;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -27,21 +27,21 @@ public class SecurityFilter extends OncePerRequestFilter {
     UsuarioRepository usuarioRepository;
 
     @Override
-    protected void doFilterInternal(@SuppressWarnings("null") HttpServletRequest request, @SuppressWarnings("null") HttpServletResponse response, @SuppressWarnings("null") FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        var token = this.recoverToken(request);
+        String token = this.recoverToken(request);
         if(token != null){
-            var nome = tokenService.validateToken(token);
+            String nome = tokenService.validateToken(token);
             UserDetails userDetails = usuarioRepository.findByNome(nome);
 
-            var authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
 
     private String recoverToken(HttpServletRequest request){
-        var authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
         if(authHeader == null) return null;
         return authHeader.replace("Bearer","");
     }
