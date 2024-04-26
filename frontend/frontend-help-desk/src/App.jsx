@@ -2,13 +2,13 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
-import Login from '../src/layouts/Auth';
+import SignIn from '../src/views/auth/SignIn';
 
 const App = () => {
   return (
     <div>
-      <h1>Teste</h1>
-      <Login />
+      {/* <h1>Teste</h1> */}
+      <SignIn />
     </div>
   );
 };
