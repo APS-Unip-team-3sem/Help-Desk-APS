@@ -1,12 +1,10 @@
-package help.desk.helpdesk.models;
+package help.desk.helpdesk.models.Usuario;
 
-import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import help.desk.helpdesk.auth.TipoUsuario;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,25 +13,24 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+import java.util.Collection;
+
 @Table(name = "usuario")
 @Entity(name = "usuario")
-
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsuarioModel implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String nome;
     private String senha;
-    private String tipousuario;
+    private TipoUsuario tipousuario;
 
 
     public long getId() {
@@ -46,8 +43,8 @@ public class UsuarioModel implements UserDetails{
         return senha;
     }
     @Enumerated(EnumType.STRING)
-    public String getTipousuario() {
-        return TipoUsuario.valueOf(tipousuario).getTipo();
+    public TipoUsuario getTipousuario() {
+        return tipousuario;
     }
     
     public void setId(long id) {
@@ -60,7 +57,7 @@ public class UsuarioModel implements UserDetails{
         this.senha = senha;
     }
     
-    public UsuarioModel(String nome, String senha, String tipousuario){
+    public UsuarioModel(String nome, String senha, TipoUsuario tipousuario){
         this.nome = nome;
         this.senha = senha;
         this.tipousuario = tipousuario;
@@ -68,8 +65,9 @@ public class UsuarioModel implements UserDetails{
     // -- Métodos do UserDetails -> Spring Security
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(TipoUsuario.valueOf(tipousuario) == TipoUsuario.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        if(this.tipousuario == TipoUsuario.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        
     }
     @Override
     public String getUsername() {
