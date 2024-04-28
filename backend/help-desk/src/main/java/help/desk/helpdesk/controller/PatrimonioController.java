@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,14 +14,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import help.desk.helpdesk.dtos.PatrimonioDto;
 import help.desk.helpdesk.models.PatrimonioModel;
 import help.desk.helpdesk.repositories.PatrimonioRepository;
 import jakarta.validation.Valid;
 
+@RestController
 public class PatrimonioController {
-	private PatrimonioRepository patrimonioRepository;
+	
+	@Autowired
+	PatrimonioRepository patrimonioRepository;
 
 	// POST (Create)
 	@PostMapping("/patrimonios")
