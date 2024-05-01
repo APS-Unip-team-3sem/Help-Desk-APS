@@ -1,16 +1,16 @@
-package help.desk.helpdesk.auth;
+package help.desk.helpdesk.models.Usuario;
 
 public enum TipoUsuario {
     USER("user"),
     ADMIN("admin");
 
-    private String tipo;
+    private String tipoUsuario;
 
     TipoUsuario(String tipo){
-        this.tipo = tipo;
+        this.tipoUsuario = tipo;
     }
 
     public String getTipo(){
-        return tipo;
+        return tipoUsuario;
     }
 }
