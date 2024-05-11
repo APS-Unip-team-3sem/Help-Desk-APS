@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Brand from "../../components/LandingPage/Brand/Brand";
 import Button from "../../components/LandingPage/Button/Button";
@@ -10,20 +10,23 @@ const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate(); // Objeto para navegação
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('/auth/login', {
-                email,
-                password
+          const response = await axios.post('/auth/login', {
+              email,
+              password
             });
 
-            // Aqui você pode tratar a resposta do backend, por exemplo, redirecionar para a página de perfil do usuário se o login for bem-sucedido
+            // Login bem-sucedido: redirecionar para a página do dashboard
+            navigate('/dashboard');  
+
             console.log('Usuário logado:', response.data);
         } catch (error) {
-            // Se ocorrer um erro, definimos a mensagem de erro para exibição no componente
+            // Erro de login: exibe mensagem de erro
             setError('Credenciais inválidas. Por favor, verifique seu e-mail e senha.');
             console.error('Erro ao fazer login:', error);
         }
