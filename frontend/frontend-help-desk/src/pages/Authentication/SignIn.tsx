@@ -7,7 +7,7 @@ import Input from "../../components/LandingPage/Input/Input";
 import GoogleIcon from "../../components/LandingPage/Icons/GoogleIcon";
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate(); // Objeto para navegação
@@ -17,7 +17,7 @@ const Login: React.FC = () => {
 
         try {
           const response = await axios.post('/auth/login', {
-              email,
+              username,
               password
             });
 
@@ -56,11 +56,11 @@ const Login: React.FC = () => {
                     </div>
                     <form onSubmit={handleLogin} className='mt-8 space-y-5'>
                         <div>
-                            <label className='font-medium'>Nome de usuário ou E-mail</label>
+                            <label className='font-medium'>Nome de usuário</label>
                             <Input
                                 type='text'
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 required
                                 className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
                             />

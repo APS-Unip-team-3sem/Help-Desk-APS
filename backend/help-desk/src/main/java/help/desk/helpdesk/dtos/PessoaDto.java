@@ -1,8 +1,8 @@
 package help.desk.helpdesk.dtos;
 
-import java.math.BigDecimal;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record PatrimonioDto(@NotBlank String nome_descricao, @NotNull BigDecimal valor) {}
+public record PessoaDto(@NotBlank String nome, @NotBlank String cpf, @NotBlank String empresa_pessoa) {
+
+}
