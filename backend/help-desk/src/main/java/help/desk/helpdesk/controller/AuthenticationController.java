@@ -1,6 +1,10 @@
 package help.desk.helpdesk.controller;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,18 +41,37 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Validated AuthenticationDTO data) {
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.nome(), data.senha());
+    public ResponseEntity<?> login(@RequestBody @Validated AuthenticationDTO data) {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(data.nome().toUpperCase(), data.senha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken( (UsuarioModel) auth.getPrincipal());
+        var token = tokenService.generateToken((UsuarioModel) auth.getPrincipal());
         return ResponseEntity.ok(new LoginRespondeDTO(token));
     }
 
-
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody @Validated RegisterDTO data) {
-        if (this.usuarioRepository.findByNome(data.nome()) != null) return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> register(@RequestBody @Validated RegisterDTO data) {
+        if (this.usuarioRepository.findByNome(data.nome()) != null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        Pattern digit = Pattern.compile("[0-9]");
+        Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+        
+        Matcher UhasDigit = digit.matcher(data.nome());
+        Matcher UhasSpecial = special.matcher(data.nome());
+
+        if(UhasSpecial.find() || UhasDigit.find()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome de usuário contém números e/ou caracteres especiais!");
+        }
+        
+        if(data.nome().length() <= 5){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome muito curto!");
+        }
+
+        if(data.senha().length() <= 5){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Senha muito curta!");
+        }
 
         String encryptedSenha = new BCryptPasswordEncoder().encode(data.senha());
 
