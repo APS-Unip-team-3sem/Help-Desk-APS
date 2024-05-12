@@ -18,7 +18,7 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
 
     @GetMapping("/getall")
-    public ResponseEntity getAllUsers(){
+    public ResponseEntity<?> getAllUsers(){
         List<UsuarioModelDTO> lista = this.usuarioRepository.findAll().stream().map(UsuarioModelDTO::new).toList();
         return ResponseEntity.ok(lista);
     }
