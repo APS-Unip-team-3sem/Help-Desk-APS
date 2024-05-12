@@ -76,7 +76,7 @@ const DropdownNotification = () => {
         }`}
       >
         <div className="px-4.5 py-3">
-          <h5 className="text-sm font-medium text-bodydark2">Notification</h5>
+          <h5 className="text-sm font-medium text-bodydark2">Notificações</h5>
         </div>
 
         <ul className="flex h-auto flex-col overflow-y-auto">
@@ -87,13 +87,12 @@ const DropdownNotification = () => {
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
-                  Edit your information in a swipe
+                  🎉 Novidades no DesTail
                 </span>{' '}
-                Sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim.
+                - Agora você pode criar e gerenciar suas tarefas.
               </p>
 
-              <p className="text-xs">12 May, 2025</p>
+              <p className="text-xs">11 maio, 2024</p>
             </Link>
           </li>
           <li>
@@ -103,12 +102,12 @@ const DropdownNotification = () => {
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
-                  It is a long established fact
+                  ✅ Ticket resolvido
                 </span>{' '}
-                that a reader will be distracted by the readable.
+                - O ticket #123 foi resolvido.
               </p>
 
-              <p className="text-xs">24 Feb, 2025</p>
+              <p className="text-xs">24 abril, 2024</p>
             </Link>
           </li>
           <li>
@@ -118,13 +117,12 @@ const DropdownNotification = () => {
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
-                  There are many variations
+                  📃 Relatório de tickets 
                 </span>{' '}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
+                - O relatório de tickets do mês de março está disponível.
               </p>
 
-              <p className="text-xs">04 Jan, 2025</p>
+              <p className="text-xs">1 abril, 2024</p>
             </Link>
           </li>
           <li>
@@ -134,13 +132,14 @@ const DropdownNotification = () => {
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
-                  There are many variations
+                  🎁 Cupom de desconto
                 </span>{' '}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
+                - Use o cupom <span className="font-medium">DESKTAIL50</span> e ganhe 50% de desconto.
               </p>
 
-              <p className="text-xs">01 Dec, 2024</p>
+              <p className="text-xs">
+                29 março, 2024
+              </p>
             </Link>
           </li>
         </ul>

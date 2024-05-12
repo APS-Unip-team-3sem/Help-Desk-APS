@@ -1,6 +1,8 @@
 export type Package = {
-  name: string;
-  price: number;
-  invoiceDate: string;
+  codTicket: number;
+  priority: string;
+  openDate: Date;
   status: string;
+  userID: number;
+  technicianID: number;
 };

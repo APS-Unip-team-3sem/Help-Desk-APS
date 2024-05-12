@@ -7,10 +7,11 @@ import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
-import ECommerce from './pages/Dashboard/ECommerce';
+import Dashboard from './pages/Dashboard/Dashboard';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
+import MyTickets from './pages/MyTickets';
 import Settings from './pages/Settings';
 import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
@@ -61,15 +62,60 @@ function App() {
             </>
           }
         />
-        {/* <Route
-          index
+        <Route
+          path="/dashboard"
           element={
             <>
-              <PageTitle title="eCommerce Dashboard | DeskTail - Dashboard" />
-              <ECommerce />
+              <PageTitle title="Dashboard | DeskTail" />
+              <Dashboard />
             </>
           }
-        /> */}
+        />
+        <Route
+          path="/profile"
+          element={
+            <>
+              <PageTitle title="Perfil | DeskTail" />
+              <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/my-tickets"
+          element={
+            <>
+              <PageTitle title="Meus tickets | DeskTail" />
+              <MyTickets />
+            </>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <>
+              <PageTitle title="Configurações | DeskTail" />
+              <Settings />
+            </>
+          }
+        />
+        <Route
+          path="/chart"
+          element={
+            <>
+              <PageTitle title="Dashboard Admin | DeskTail" />
+              <Chart />
+            </>
+          }
+        />
+        <Route
+          path="/tables"
+          element={
+            <>
+              <PageTitle title="Tabelas | DeskTail" />
+              <Tables />
+            </>
+          }
+        />
         {/* <Route
           path="/calendar"
           element={
@@ -79,15 +125,7 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/profile"
-          element={
-            <>
-              <PageTitle title="Perfil | DeskTail - Dashboard" />
-              <Profile />
-            </>
-          }
-        />
+        
         <Route
           path="/forms/form-elements"
           element={
@@ -106,33 +144,9 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/tables"
-          element={
-            <>
-              <PageTitle title="Tables | DeskTail - Dashboard" />
-              <Tables />
-            </>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <>
-              <PageTitle title="Configurações | DeskTail - Dashboard" />
-              <Settings />
-            </>
-          }
-        />
-        <Route
-          path="/chart"
-          element={
-            <>
-              <PageTitle title="Basic Chart | DeskTail - Dashboard" />
-              <Chart />
-            </>
-          }
-        />
+        
+        
+        
         <Route
           path="/ui/alerts"
           element={

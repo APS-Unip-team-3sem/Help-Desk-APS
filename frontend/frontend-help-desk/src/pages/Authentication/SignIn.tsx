@@ -32,6 +32,11 @@ const Login: React.FC = () => {
         }
     };
 
+    const handleContinueWithGoogle = () => {
+      // teste
+        window.location.href = '/dashboard';
+    };
+
     return (
         <>
             <main className='w-full h-screen flex flex-col items-center justify-center px-4'>
@@ -81,6 +86,7 @@ const Login: React.FC = () => {
                         </Button>
                         <button
                             type='button'
+                            onClick={handleContinueWithGoogle}
                             className='w-full flex items-center justify-center gap-x-3 py-2.5 border border-gray-800 rounded-lg text-sm font-medium bg-gray-800/40 hover:bg-gray-800 ring-purple-500 focus:ring duration-150'>
                             <GoogleIcon />
                             Continue com o Google
