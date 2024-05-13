@@ -178,6 +178,28 @@ public class ChamadoController {
                 }
             }
             return ResponseEntity.ok(listaMODEL);
+            
+        } else if(mod.contains("user-")){
+            System.out.println("Entrou");
+            System.out.println(mod.substring(5, mod.length()));
+
+            long parmId = Long.parseLong(mod.substring(5, mod.length()));
+
+            System.out.println(parmId);
+
+            for (ChamadoDto chamado : listaDTO){
+                if(chamado.usuarioModel().getId() == parmId){
+                    chamadoOPT = null;
+                    chamadoOPT = chamadoRepository.findById(chamado.id());
+                    chamadoOPT.map(chamadoFinal -> {
+                        if (chamadoFinal.getUsuarioModel().getId() == usuLog.getId()) {
+                            listaMODEL.add(chamadoFinal);
+                        }
+                        return null;
+                    });
+                }
+            }
+            return ResponseEntity.ok(listaMODEL);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi especificado o que buscar");
     }
