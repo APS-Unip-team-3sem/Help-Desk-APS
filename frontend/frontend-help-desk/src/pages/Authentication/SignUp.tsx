@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { register } from '../../api/auth'; // Importa a função register da sua API Axios
 import Brand from "../../components/LandingPage/Brand/Brand";
 import Button from "../../components/LandingPage/Button/Button";
 import Input from "../../components/LandingPage/Input/Input";
@@ -19,13 +19,8 @@ const SignUp: React.FC = () => {
     e.preventDefault();
 
     try {
-      await axios.post('http://localhost:9000/auth/register', {
-        nome,
-        senha,
-        tipo,
-        cnpj: isEmpresa ? cnpj : undefined,
-      });
-
+      // Usa a função register da sua API Axios para enviar os dados para o backend
+      await register(nome, senha, tipo);
       // Registro bem-sucedido: redirecionar para a página de login
       navigate('/signin');
       alert('Conta criada com sucesso!');
