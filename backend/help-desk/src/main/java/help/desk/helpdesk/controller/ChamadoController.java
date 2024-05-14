@@ -92,7 +92,7 @@ public class ChamadoController {
             UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
 
             ChamadoModel chamadoModel = new ChamadoModel(chamadoDto.titulo(), chamadoDto.descricao(),
-                    chamadoDto.prioridade(), Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)), usuariomodel);
+                    chamadoDto.prioridade(), Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)), usuariomodel, chamadoDto.patrimonioModel());
             return ResponseEntity.ok(chamadoRepository.save(chamadoModel));
         } catch (Exception e) {
 
