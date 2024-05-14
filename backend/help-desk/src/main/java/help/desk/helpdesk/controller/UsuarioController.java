@@ -1,6 +1,7 @@
 package help.desk.helpdesk.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +28,12 @@ public class UsuarioController {
 
     @GetMapping("/{nome}")
     private ResponseEntity<?> getByName(@PathVariable("nome") @Valid String nome){
-        UsuarioModelDTO user = this.usuarioRepository.getIdByNome(nome);
-        return ResponseEntity.ok(user.id());
+        try {
+            
+            UsuarioModelDTO user = this.usuarioRepository.getIdByNomeIgnoreCase(nome);
+            return ResponseEntity.ok(user.id());
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar o usuário");
+        }
     } 
 }

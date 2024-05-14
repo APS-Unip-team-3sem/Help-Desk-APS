@@ -79,6 +79,7 @@ public class ChamadoController {
 
     @DeleteMapping("/del/{id}")
     private ResponseEntity<?> delChamado(@PathVariable("id") @Valid UUID id) {
+
         Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
         if (chamado.isPresent()) {
             chamadoRepository.deleteById(id);
@@ -90,12 +91,12 @@ public class ChamadoController {
 
     @PostMapping("/add")
     private ResponseEntity<?> addChamado(@RequestBody @Valid ChamadoDto chamadoDto) {
+        Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
+        UsuarioModel usuarioLogado = ((UsuarioModel) authenticantion.getPrincipal());
         try {
-            Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
-            UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
 
             ChamadoModel chamadoModel = new ChamadoModel(chamadoDto.titulo(), chamadoDto.descricao(),
-                    chamadoDto.prioridade(), Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)), usuariomodel,
+                    chamadoDto.prioridade(), Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)), usuarioLogado,
                     chamadoDto.patrimonioModel());
             return ResponseEntity.ok(chamadoRepository.save(chamadoModel));
         } catch (Exception e) {
@@ -162,99 +163,85 @@ public class ChamadoController {
     @GetMapping("/getby/{mod}")
     private ResponseEntity<?> getBy(@PathVariable("mod") @Valid String mod) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
-        UsuarioModel usuLog = ((UsuarioModel) authenticantion.getPrincipal());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-        Optional<ChamadoModel> chamadoOPT = null;
-        List<ChamadoDto> listaDTO = chamadoRepository.findAll().stream().map(ChamadoDto::new).toList();
-        List<ChamadoModel> listaMODEL = new ArrayList<>();
-        //mod = mod.toLowerCase();
+        UsuarioModel usuarioLogado = ((UsuarioModel) authenticantion.getPrincipal());
 
-        if(mod.isBlank()){
+        if (mod.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi especificado o que buscar");
         }
 
+        List<ChamadoDto> listaDTO = chamadoRepository.findAll().stream().map(ChamadoDto::new).toList();
+        List<ChamadoModel> listaMODEL = new ArrayList<>();
+
         for (ChamadoDto chamado : listaDTO) {
-            chamadoOPT = null;
+            Optional<ChamadoModel> chamadoOPT = null;
             chamadoOPT = chamadoRepository.findById(chamado.id());
-            if (mod.equals("user")) {
-                if (chamadoOPT.isPresent()) {
+            if (chamadoOPT.isPresent()) {
+                try {
                     chamadoOPT.map(chamadoFinal -> {
-                        try {
-                            if (chamadoFinal.getUsuarioModel().getId() == usuLog.getId()) {
+
+                        if (mod.equals("user")) {
+                            if (chamadoFinal.getUsuarioModel().getId() == usuarioLogado.getId()) {
                                 listaMODEL.add(chamadoFinal);
                             }
-                        } catch (NullPointerException e) {
-                        }
-                        return null;
-                    });
-                }
-            } else if (mod.contains("user-")) {
-                long parmId = Long.parseLong(mod.substring(5, mod.length()));
-                if (chamadoOPT.isPresent()) {
-                    chamadoOPT.map(chamadoFinal -> {
-                        try {
+                        } else if (mod.contains("user-")) {
+                            long parmId = Long.parseLong(mod.substring(5, mod.length()));
                             if (chamadoFinal.getUsuarioModel().getId() == parmId) {
                                 listaMODEL.add(chamadoFinal);
                             }
-                        } catch (NullPointerException e) {
+                        } else if (mod.equalsIgnoreCase("userr")) {
+
+                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == usuarioLogado.getId()) {
+                                listaMODEL.add(chamadoFinal);
+                            }
+                        } else if (mod.contains("userr-")) {
+                            long parmId = Long.parseLong(mod.substring(6, mod.length()));
+
+                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == parmId) {
+                                listaMODEL.add(chamadoFinal);
+                            }
+                        } else if (mod.contains("prio-")) {
+                            String prio = mod.substring(5, mod.length());
+
+                            if (chamadoFinal.getPrioridadeChamado() == PrioridadeChamado.valueOf(prio)) {
+                                listaMODEL.add(chamadoFinal);
+                            }
+                        } else if (mod.contains("date-")) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            String dates = mod.substring(5, mod.length()); // '2024-05-14_2024-07-16'
+                            try {
+                                if (mod.length() > 20) {
+                                    Date date1 = simpleDateFormat.parse(dates.substring(0, 10));
+                                    Date date2 = simpleDateFormat.parse(dates.substring(11, dates.length()));
+                                    if (chamadoFinal.getAbertura().after(date1)
+                                            && chamadoFinal.getAbertura().before(date2)) {
+                                        listaMODEL.add(chamadoFinal);
+                                    }
+
+                                } else {
+                                    Date date1 = simpleDateFormat.parse(dates.substring(1, dates.length()));
+                                    switch (mod.charAt(5)) {
+                                        case '+':
+                                            if (chamadoFinal.getAbertura().after(date1)) {
+                                                listaMODEL.add(chamadoFinal);
+                                            }
+                                            break;
+                                        case '-':
+                                            if (chamadoFinal.getAbertura().before(date1)) {
+                                                listaMODEL.add(chamadoFinal);
+                                            }
+                                            break;
+                                    }
+                                }
+                            } catch (ParseException p) {}
                         }
                         return null;
                     });
+                } catch (NullPointerException n) {
                 }
-            } else if (mod.equalsIgnoreCase("userr")) {
-                if (chamadoOPT.isPresent()) {
-                    chamadoOPT.map(chamadoFinal -> {
-                        try {
-                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == usuLog.getId()) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } catch (NullPointerException e) {}
-                        return null;
-                    });
-                }
-            } else if (mod.contains("userr-")){
-                long parmId = Long.parseLong(mod.substring(6, mod.length()));
-                if (chamadoOPT.isPresent()){
-                    chamadoOPT.map(chamadoFinal -> {
-                        try{
-                            if(chamadoFinal.getUsuarioModelResponsavel().getId() == parmId){
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        }catch(NullPointerException e){}
-                        return null;
-                    });
-                }   
-            } else if (mod.contains("prio-")){
-                String prio = mod.substring(5,mod.length());
-                if (chamadoOPT.isPresent()){
-                    chamadoOPT.map(chamadoFinal -> {
-                        try {
-                            if(chamadoFinal.getPrioridadeChamado() == PrioridadeChamado.valueOf(prio)){
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } catch (NullPointerException e) {}
-                        return null;
-                    });
-                }
-            } else if (mod.contains("date-")){
-                String dates = mod.substring(6,mod.length()); // '2024-05-14_2024-07-16'
-                try {
-                    Date date1 = simpleDateFormat.parse(dates.substring(0,10));
-                    Date date2 = simpleDateFormat.parse(dates.substring(11,dates.length()));
-                    if(chamadoOPT.isPresent()){
-                        chamadoOPT.map(chamadoFinal -> {
-                            if(chamadoFinal.getAbertura().after(date1) && chamadoFinal.getAbertura().before(date2)){
-                                listaMODEL.add(chamadoFinal);
-                            }
-                            return null;
-                        });
-                    }
-                } catch (ParseException e){} catch (NullPointerException c){}
-
             }
+
         }
+
         return ResponseEntity.ok(listaMODEL);
-
     }
-
 }

@@ -9,6 +9,6 @@ import help.desk.helpdesk.models.Usuario.UsuarioModelDTO;
 
 public interface UsuarioRepository extends JpaRepository<UsuarioModel,Long>{
     
-    UserDetails findByNome(String nome);
-    UsuarioModelDTO getIdByNome(String nome);
+    UserDetails findByNomeIgnoreCase(String nome);
+    UsuarioModelDTO getIdByNomeIgnoreCase(String nome);
 }
