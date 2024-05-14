@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import help.desk.helpdesk.models.PatrimonioModel;
 import help.desk.helpdesk.models.Usuario.UsuarioModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,6 +54,10 @@ public class ChamadoModel {
     private PrioridadeChamado prioridadeChamado;
 
     @ManyToOne
+    @JoinColumn(name = "id_patrimonio")
+    private PatrimonioModel patrimonioModel;
+
+    @ManyToOne
     @JoinColumn(name = "id_usuario",nullable = false)
     private UsuarioModel usuarioModel;
     
@@ -60,13 +65,14 @@ public class ChamadoModel {
     @JoinColumn(name = "id_resposavel")
     private UsuarioModel usuarioModelResponsavel;
 
-    public ChamadoModel(String titulo, String descricao, PrioridadeChamado prioridade, Date abertura, UsuarioModel usuarioModel){
+    public ChamadoModel(String titulo, String descricao, PrioridadeChamado prioridade, Date abertura, UsuarioModel usuarioModel, PatrimonioModel patrimonioModel){
         this.titulo = titulo;
         this.descricao = descricao;
         this.abertura = abertura;
         this.statusChamado = StatusChamado.ABERTO;
         this.prioridadeChamado = prioridade;
         this.usuarioModel = usuarioModel;
+        this.patrimonioModel = patrimonioModel;
     }
 
     public void setNull(){
@@ -79,6 +85,7 @@ public class ChamadoModel {
         this.titulo= null;
         this.usuarioModel= null;
         this.usuarioModelResponsavel= null;
+        this.patrimonioModel = null;
     }
 
     public ChamadoModel(Optional<ChamadoModel> chamado){
@@ -92,6 +99,7 @@ public class ChamadoModel {
             this.prioridadeChamado =  chamadoFinal.getPrioridadeChamado();
             this.fechamento =  chamadoFinal.getFechamento();
             this.statusChamado = chamadoFinal.getStatusChamado();
+            this.patrimonioModel = chamadoFinal.getPatrimonioModel();
             return null;
         });
     }
