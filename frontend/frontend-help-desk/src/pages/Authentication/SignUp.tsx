@@ -1,11 +1,46 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Brand from "../../components/LandingPage/Brand/Brand";
 import Button from "../../components/LandingPage/Button/Button";
 import Input from "../../components/LandingPage/Input/Input";
 import GoogleIcon from "../../components/LandingPage/Icons/GoogleIcon";
 
 const SignUp: React.FC = () => {
+  const [nome, setNome] = useState('');
+  const [senha, setSenha] = useState('');
+  const [tipo, setTipo] = useState<'USER'>('USER');
+  const [isEmpresa, setIsEmpresa] = useState(false);
+  const [cnpj, setCnpj] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      await axios.post('http://localhost:9000/auth/register', {
+        nome,
+        senha,
+        tipo,
+        cnpj: isEmpresa ? cnpj : undefined,
+      });
+
+      // Registro bem-sucedido: redirecionar para a página de login
+      navigate('/signin');
+      alert('Conta criada com sucesso!');
+    } catch (error) {
+      // Erro de registro: exibe mensagem de erro
+      setError('Erro ao criar conta. Verifique os dados e tente novamente.');
+      console.error('Erro ao fazer registro:', error);
+    }
+  };
+
+  const handleTipoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsEmpresa(e.target.checked);
+    setTipo('USER'); // Define o tipo como USER independentemente da escolha de registrar como empresa
+  };
+
   return (
     <>
       <main className='w-full h-screen flex flex-col items-center justify-center px-4'>
@@ -28,19 +63,13 @@ const SignUp: React.FC = () => {
               </p>
             </div>
           </div>
-          <form onSubmit={(e) => e.preventDefault()} className='mt-8 space-y-5'>
+          <form onSubmit={handleRegister} className='mt-8 space-y-5'>
             <div>
-              <label className='font-medium'>Nome de usuário</label>
+              <label className='font-medium'>{isEmpresa ? 'Nome da empresa' : 'Nome de usuário'}</label>
               <Input
                 type='text'
-                required
-                className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
-              />
-            </div>
-            <div>
-              <label className='font-medium'>Endereço de email</label>
-              <Input
-                type='email'
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
                 required
                 className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
               />
@@ -49,15 +78,42 @@ const SignUp: React.FC = () => {
               <label className='font-medium'>Senha</label>
               <Input
                 type='password'
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
                 required
                 className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
               />
             </div>
-            <Button className='w-full text-gray-800 bg-gray-100 hover:bg-gray-200 ring-offset-2 focus:ring rounded-lg'>
+            <div>
+              <label className='flex items-center'>
+                <input
+                  type='checkbox'
+                  checked={isEmpresa}
+                  onChange={handleTipoChange}
+                  className='mr-2'
+                />
+                Registrar como empresa
+              </label>
+            </div>
+            {isEmpresa && (
+              <div>
+                <label className='font-medium'>CNPJ</label>
+                <Input
+                  type='text'
+                  value={cnpj}
+                  onChange={(e) => setCnpj(e.target.value)}
+                  required={isEmpresa}
+                  className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
+                />
+              </div>
+            )}
+            {error && <p className="text-red-500">{error}</p>}
+            <Button type='submit' className='w-full text-gray-800 bg-gray-100 hover:bg-gray-200 ring-offset-2 focus:ring rounded-lg'>
               Criar conta
             </Button>
             <button
               type='button'
+              onClick={() => alert('Continuar com Google não implementado')}
               className='w-full flex items-center justify-center gap-x-3 py-2.5 border border-gray-800 rounded-lg text-sm font-medium bg-gray-800/40 hover:bg-gray-800 ring-purple-500 focus:ring duration-150'>
               <GoogleIcon />
               Continue com o Google

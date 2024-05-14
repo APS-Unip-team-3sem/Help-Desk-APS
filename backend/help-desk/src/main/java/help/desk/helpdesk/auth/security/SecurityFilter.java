@@ -25,39 +25,23 @@ public class SecurityFilter extends OncePerRequestFilter {
         @Autowired
         UsuarioRepository usuarioRepository;
 
-<<<<<<< HEAD
+        @SuppressWarnings("null")
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                         FilterChain filterChain)
                         throws ServletException, IOException {
-                String token = this.recoverToken(request);
+                var token = this.recoverToken(request);
 
                 if (token != null) {
                         String nome = tokenService.validateToken(token);
                         UserDetails userDetails = usuarioRepository.findByNome(nome);
 
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-                                        userDetails.getAuthorities());
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                        userDetails, null, userDetails.getAuthorities());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-                filterChain.doFilter(request, response);
-=======
-    @SuppressWarnings("null")
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        var token = this.recoverToken(request);
-        
-        if(token != null){
-            String nome = tokenService.validateToken(token);
-            UserDetails userDetails = usuarioRepository.findByNome(nome);
-            
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
->>>>>>> b1b2de9e0a52ffa29d2ae98f95d4991fdd1e446a
         }
 
-<<<<<<< HEAD
         private String recoverToken(HttpServletRequest request) {
                 String authHeader = request.getHeader("Authorization");
                 if (authHeader != null) {
@@ -66,13 +50,3 @@ public class SecurityFilter extends OncePerRequestFilter {
                 return null;
         }
 }
-=======
-    private String recoverToken(HttpServletRequest request){
-        String authHeader = request.getHeader("Authorization");
-        if(authHeader != null){
-            return authHeader.replace("Bearer ","");
-        } 
-        return null;
-    }
-}
->>>>>>> b1b2de9e0a52ffa29d2ae98f95d4991fdd1e446a
