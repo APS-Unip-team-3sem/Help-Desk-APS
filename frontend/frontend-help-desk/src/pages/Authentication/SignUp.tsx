@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios'; 
 import { register } from '../../api/auth'; // Importa a função register da sua API Axios
 import Brand from "../../components/LandingPage/Brand/Brand";
 import Button from "../../components/LandingPage/Button/Button";
@@ -19,9 +20,9 @@ const SignUp: React.FC = () => {
     e.preventDefault();
 
     try {
-      // Usa a função register da sua API Axios para enviar os dados para o backend
+      // Usa a função register API Axios para enviar os dados para o backend
       await register(nome, senha, tipo);
-      // Registro bem-sucedido: redirecionar para a página de login
+      // Registro bem-sucedido: redireciona para a página de login
       navigate('/signin');
       alert('Conta criada com sucesso!');
     } catch (error) {
@@ -33,7 +34,43 @@ const SignUp: React.FC = () => {
 
   const handleTipoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsEmpresa(e.target.checked);
-    setTipo('USER'); // Define o tipo como USER independentemente da escolha de registrar como empresa
+    setTipo('USER'); 
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  
+    try {
+      const response = await axios.post('http://localhost:9000/auth/register', {
+        username: nome,
+        password: senha, 
+        userType: tipo, 
+      });
+  
+      if (response.status === 200) {
+        // código para lidar com o registro bem-sucedido
+
+        // Redirecionar para a página de login
+        navigate('/signin');
+        alert('Conta criada com sucesso!');
+
+        //MOSTRAR TOKEN
+        console.log('Token:', response.data.token);
+
+        // EXIBIR NOME DO USUÁRIO E TIPO
+        console.log('Nome:', response.data.nome);
+        console.log('Tipo:', response.data.tipo);
+      } else {
+        // código para lidar com erros de registro
+
+        // Exibe a mensagem de erro retornada pelo servidor
+        setError(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      // código para lidar com erros de rede
+      setError('Erro ao criar conta. Verifique os dados e tente novamente.');
+    }
   };
 
   return (
@@ -58,7 +95,7 @@ const SignUp: React.FC = () => {
               </p>
             </div>
           </div>
-          <form onSubmit={handleRegister} className='mt-8 space-y-5'>
+          <form onSubmit={handleSubmit} className='mt-8 space-y-5'>
             <div>
               <label className='font-medium'>{isEmpresa ? 'Nome da empresa' : 'Nome de usuário'}</label>
               <Input

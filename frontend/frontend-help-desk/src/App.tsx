@@ -151,7 +151,7 @@ function App() {
           path="/ui/alerts"
           element={
             <>
-              <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Alerts |  DeskTail - Dashboard" />
               <Alerts />
             </>
           }
@@ -160,7 +160,7 @@ function App() {
           path="/ui/buttons"
           element={
             <>
-              <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Buttons |  DeskTail - Dashboard" />
               <Buttons />
             </>
           }

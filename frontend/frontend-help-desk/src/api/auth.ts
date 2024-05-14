@@ -1,11 +1,48 @@
 import axios from 'axios';
 
-const api = axios.create({
-    baseURL: 'http://localhost:9000/auth',
-});
+interface LoginResponse {
+    token: string;
+    nome: string;
+    tipo: string;
+    
+}
 
-export const login = (nome: string, senha: string) =>
-    api.post('/login', { nome, senha });
+export const login = async (nome: string, senha: string): Promise<LoginResponse> => {
+    try {
+        const response = await axios.post('http://localhost:9000/auth/login', {
+            username: nome,
+            password: senha
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Erro ao fazer login');
+    }
+};
 
-export const register = (nome: string, senha: string, tipo: string) =>
-    api.post('/register', { nome, senha, tipo });
+interface RegisterResponse {
+    token: string;
+    nome: string;
+    tipo: string;
+    
+}
+
+export const register = async (nome: string, senha: string, tipo: string): Promise<RegisterResponse> => {
+    try {
+        const response = await axios.post('http://localhost:9000/auth/register', {
+            username: nome,
+            password: senha,
+            userType: tipo
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Erro ao criar conta');
+    }
+};

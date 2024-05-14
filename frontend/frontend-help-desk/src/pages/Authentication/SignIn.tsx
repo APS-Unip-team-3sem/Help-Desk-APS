@@ -18,13 +18,21 @@ const SignIn: React.FC = () => {
         try {
             const response = await login(nome, senha); // Use a função login definida em auth.ts
 
-            // Armazene o token no localStorage (ou outro local seguro)
-            localStorage.setItem('token', response.data.token);
+            // Exibir a resposta no console
+            console.log('Resposta do servidor:', response);
 
-            // Login bem-sucedido: redirecionar para a página do dashboard
-            navigate('/dashboard');
+            // Verifique se a resposta contém o token
+            if (response.token) {
+                // Armazene o token no localStorage (ou outro local seguro)
+                localStorage.setItem('token', response.token);
 
-            console.log('Usuário logado:', response.data);
+                // Login bem-sucedido: redirecionar para a página do dashboard
+                navigate('/dashboard');
+
+                console.log('Usuário logado:', response);
+            } else {
+                setError('Token não encontrado na resposta');
+            }
         } catch (error) {
             // Erro de login: exibe mensagem de erro
             setError('Credenciais inválidas. Por favor, verifique seu nome de usuário e senha.');
