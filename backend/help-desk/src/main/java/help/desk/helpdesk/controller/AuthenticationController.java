@@ -58,8 +58,6 @@ public class AuthenticationController {
         }
         try {
             if (data.nome().matches("^[a-zA-Z]*$")){
-
-                
                 if (data.nome().length() <= 5) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome muito curto!");
             }
@@ -79,6 +77,6 @@ public class AuthenticationController {
     } catch (NullPointerException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome, Senha ou tipo está nulo");
     }
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel");
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel, verifique os dados que estão sendo enviados. Usuário não pode possuir numeros nem caracteres especiais");
     }
 }
