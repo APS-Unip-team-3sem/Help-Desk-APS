@@ -53,28 +53,32 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Validated RegisterDTO data) {
-        if (this.usuarioRepository.findByNome(data.nome()) != null) {
-            return ResponseEntity.badRequest().build();
+        if (this.usuarioRepository.findByNomeIgnoreCase(data.nome()) != null) {
+            return ResponseEntity.badRequest().body("Usuário ja existe no sistema");
         }
-
         try {
-            if (data.nome().length() <= 5) {
+            if (data.nome().matches("^[a-zA-Z]*$")){
+
+                
+                if (data.nome().length() <= 5) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome muito curto!");
             }
 
             if (data.senha().length() <= 5) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Senha muito curta!");
             }
-
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome, Senha ou tipo está nulo");
+            
+            
+            String encryptedSenha = new BCryptPasswordEncoder().encode(data.senha());
+            
+            UsuarioModel usuarioModel = new UsuarioModel(data.nome(), encryptedSenha, data.tipo());
+            
+            this.usuarioRepository.save(usuarioModel);
+            return ResponseEntity.ok().build();
         }
-
-        String encryptedSenha = new BCryptPasswordEncoder().encode(data.senha());
-
-        UsuarioModel usuarioModel = new UsuarioModel(data.nome(), encryptedSenha, data.tipo());
-
-        this.usuarioRepository.save(usuarioModel);
-        return ResponseEntity.ok().build();
+    } catch (NullPointerException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome, Senha ou tipo está nulo");
+    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel");
     }
 }

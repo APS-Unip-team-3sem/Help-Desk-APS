@@ -43,7 +43,7 @@ public class ChamadoController {
 
     @GetMapping("")
     private ResponseEntity<?> getAllChamados() {
-        List<ChamadoDto> lista = chamadoRepository.findAll().stream().map(ChamadoDto::new).toList();
+        List<ChamadoModel> lista = chamadoRepository.findAll().stream().map(ChamadoModel::new).toList();
         return ResponseEntity.ok(lista);
     }
 
@@ -57,7 +57,6 @@ public class ChamadoController {
     @GetMapping("/{tag}/{value}/{mod}")
     private ResponseEntity<?> getBy(@PathVariable("tag") @Valid String tag, @PathVariable("value") @Valid String value,
             @PathVariable("mod") @Valid String mod) {
-        System.out.println("Entrou");
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuarioLogado = ((UsuarioModel) authenticantion.getPrincipal());
 
@@ -112,10 +111,18 @@ public class ChamadoController {
                                 }
                             } catch (ParseException p) {
                             }
-                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("pass")) {
+                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("past")) {
                             try {
                                 Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
                                 if (chamadoFinal.getAbertura().before(date1)) {
+                                    listaMODEL.add(chamadoFinal);
+                                }
+                            } catch (ParseException e) {
+                            }
+                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("future")) {
+                            try {
+                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+                                if (chamadoFinal.getAbertura().after(date1)) {
                                     listaMODEL.add(chamadoFinal);
                                 }
                             } catch (ParseException e) {
@@ -162,20 +169,25 @@ public class ChamadoController {
 
         Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
         ChamadoModel chamadoModel = new ChamadoModel(chamado);
+        try {
 
-        if (chamado.isPresent()) {
-            if (chamadoModel.getStatusChamado() == StatusChamado.FECHADO) {
-                return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS).body("Chamado já está fechado");
+            if (chamado.isPresent()) {
+                if (chamadoModel.getStatusChamado() == StatusChamado.FECHADO) {
+                    return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
+                            .body("Chamado já está fechado");
 
-            } else if (chamadoModel.getUsuarioModelResponsavel().getId() == usuariomodel.getId()) {
-                chamadoModel.setStatusChamado(StatusChamado.FECHADO);
-                chamadoModel.setFechamento(Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)));
-                chamadoRepository.save(chamadoModel);
-                return ResponseEntity.status(HttpStatus.OK).body("Chamado finalizado com sucesso!");
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
-                        .body("Chamado pode ser fechado apenas pelo seu responsável");
+                } else if (chamadoModel.getUsuarioModelResponsavel().getId() == usuariomodel.getId()) {
+                    chamadoModel.setStatusChamado(StatusChamado.FECHADO);
+                    chamadoModel.setFechamento(Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)));
+                    chamadoRepository.save(chamadoModel);
+                    return ResponseEntity.status(HttpStatus.OK).body("Chamado finalizado com sucesso!");
+
+                }
             }
+        } catch (NullPointerException e) {
+
+            return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
+                    .body("Chamado pode ser fechado apenas pelo seu responsável");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
     }

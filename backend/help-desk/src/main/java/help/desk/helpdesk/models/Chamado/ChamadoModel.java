@@ -75,6 +75,17 @@ public class ChamadoModel {
         this.patrimonioModel = patrimonioModel;
     }
 
+    public ChamadoModel(UUID id, String titulo, String descricao, PrioridadeChamado prioridade, Date abertura, StatusChamado statusChamado, PatrimonioModel patrimonioModel, UsuarioModel usuarioModel){
+        this.id = id;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.abertura = abertura;
+        this.statusChamado = statusChamado;
+        this.prioridadeChamado = prioridade;
+        this.usuarioModel = usuarioModel;
+        this.patrimonioModel = patrimonioModel;
+    }
+
     public void setNull(){
         this.abertura= null;
         this.descricao= null;
@@ -102,5 +113,9 @@ public class ChamadoModel {
             this.patrimonioModel = chamadoFinal.getPatrimonioModel();
             return null;
         });
+    }
+
+    public ChamadoModel(ChamadoModel chamado){
+        this(chamado.getId(), chamado.getTitulo(),chamado.getDescricao(),chamado.getPrioridadeChamado(),chamado.getAbertura(),chamado.getStatusChamado(),chamado.getPatrimonioModel(),chamado.getUsuarioModel());
     }
 }
