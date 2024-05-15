@@ -41,20 +41,98 @@ public class ChamadoController {
     @Autowired
     private ChamadoRepository chamadoRepository;
 
-    @GetMapping("/getall")
+    @GetMapping("")
     private ResponseEntity<?> getAllChamados() {
         List<ChamadoDto> lista = chamadoRepository.findAll().stream().map(ChamadoDto::new).toList();
         return ResponseEntity.ok(lista);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     private ResponseEntity<?> getChamado(@PathVariable("id") @Valid UUID id) {
         Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
         return (chamado.isPresent()) ? ResponseEntity.ok(chamado)
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
     }
 
-    @PutMapping("/put/{id}")
+    @GetMapping("/{tag}/{value}/{mod}")
+    private ResponseEntity<?> getBy(@PathVariable("tag") @Valid String tag, @PathVariable("value") @Valid String value,
+            @PathVariable("mod") @Valid String mod) {
+        System.out.println("Entrou");
+        Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
+        UsuarioModel usuarioLogado = ((UsuarioModel) authenticantion.getPrincipal());
+
+        if (mod.isBlank()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi especificado o que buscar");
+        }
+
+        List<ChamadoDto> listaDTO = chamadoRepository.findAll().stream().map(ChamadoDto::new).toList();
+        List<ChamadoModel> listaMODEL = new ArrayList<>();
+
+        for (ChamadoDto chamado : listaDTO) {
+            Optional<ChamadoModel> chamadoOPT = chamadoRepository.findById(chamado.id());
+            if (chamadoOPT.isPresent()) {
+                try {
+                    chamadoOPT.map(chamadoFinal -> {
+
+                        if (tag.equalsIgnoreCase("user") && value.equalsIgnoreCase("null") && mod.equals("null")) {
+                            if (chamadoFinal.getUsuarioModel().getId() == usuarioLogado.getId()) {
+                                listaMODEL.add(chamadoFinal);
+                            }
+                        } else if (tag.equalsIgnoreCase("user") && mod.equalsIgnoreCase("null")) {
+                            if (chamadoFinal.getUsuarioModel().getId() == Long.parseLong(value)) {
+                                listaMODEL.add(chamadoFinal);
+                            }
+                        } else if (tag.equalsIgnoreCase("tech") && value.equalsIgnoreCase("null")
+                                && mod.equalsIgnoreCase("null")) {
+
+                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == usuarioLogado.getId()) {
+                                listaMODEL.add(chamadoFinal);
+                            }
+                        } else if (tag.equalsIgnoreCase("tech") && mod.equalsIgnoreCase("null")) {
+                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == Long.parseLong(value)) {
+                                listaMODEL.add(chamadoFinal);
+                            }
+                        } else if (tag.equalsIgnoreCase("prior") && mod.equalsIgnoreCase("null")) {
+                            try {
+                                if (chamadoFinal.getPrioridadeChamado() == PrioridadeChamado
+                                        .valueOf(value.toUpperCase())) {
+                                    listaMODEL.add(chamadoFinal);
+                                }
+                            } catch (IllegalArgumentException e) {
+                            }
+                        } else if (tag.equalsIgnoreCase("dates") && mod.equalsIgnoreCase("null")) {
+                            String[] dates = value.split("[_]");
+                            try {
+                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(dates[0]);
+                                Date date2 = new SimpleDateFormat("yyyy-MM-dd").parse(dates[1]);
+                                if (chamadoFinal.getAbertura().after(date1)
+                                        && chamadoFinal.getAbertura().before(date2)) {
+                                    listaMODEL.add(chamadoFinal);
+
+                                }
+                            } catch (ParseException p) {
+                            }
+                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("pass")) {
+                            try {
+                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+                                if (chamadoFinal.getAbertura().before(date1)) {
+                                    listaMODEL.add(chamadoFinal);
+                                }
+                            } catch (ParseException e) {
+                            }
+                        }
+                        return null;
+                    });
+                } catch (NullPointerException n) {
+                }
+            }
+
+        }
+
+        return ResponseEntity.ok(listaMODEL);
+    }
+
+    @PutMapping("/{id}")
     private ResponseEntity<?> putChamado(@RequestBody ChamadoDto newChamado, @PathVariable("id") @Valid UUID id) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
@@ -77,35 +155,7 @@ public class ChamadoController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
     }
 
-    @DeleteMapping("/del/{id}")
-    private ResponseEntity<?> delChamado(@PathVariable("id") @Valid UUID id) {
-
-        Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
-        if (chamado.isPresent()) {
-            chamadoRepository.deleteById(id);
-            return ResponseEntity.ok().body("Chamado deletado com sucesso");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
-        }
-    }
-
-    @PostMapping("/add")
-    private ResponseEntity<?> addChamado(@RequestBody @Valid ChamadoDto chamadoDto) {
-        Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
-        UsuarioModel usuarioLogado = ((UsuarioModel) authenticantion.getPrincipal());
-        try {
-
-            ChamadoModel chamadoModel = new ChamadoModel(chamadoDto.titulo(), chamadoDto.descricao(),
-                    chamadoDto.prioridade(), Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)), usuarioLogado,
-                    chamadoDto.patrimonioModel());
-            return ResponseEntity.ok(chamadoRepository.save(chamadoModel));
-        } catch (Exception e) {
-
-            return ResponseEntity.ok(e.getMessage());
-        }
-    }
-
-    @PutMapping("/end/{id}")
+    @PutMapping("/e/{id}")
     private ResponseEntity<?> closeChamado(@PathVariable("id") @Valid UUID id) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
@@ -130,7 +180,7 @@ public class ChamadoController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
     }
 
-    @PutMapping("/init/{id}")
+    @PutMapping("/i/{id}")
     private ResponseEntity<?> initChamado(@PathVariable("id") @Valid UUID id) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
@@ -160,88 +210,32 @@ public class ChamadoController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
     }
 
-    @GetMapping("/getby/{mod}")
-    private ResponseEntity<?> getBy(@PathVariable("mod") @Valid String mod) {
+    @DeleteMapping("/{id}")
+    private ResponseEntity<?> delChamado(@PathVariable("id") @Valid UUID id) {
+
+        Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
+        if (chamado.isPresent()) {
+            chamadoRepository.deleteById(id);
+            return ResponseEntity.ok().body("Chamado deletado com sucesso");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
+        }
+    }
+
+    @PostMapping("")
+    private ResponseEntity<?> addChamado(@RequestBody @Valid ChamadoDto chamadoDto) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuarioLogado = ((UsuarioModel) authenticantion.getPrincipal());
+        try {
 
-        if (mod.isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi especificado o que buscar");
+            ChamadoModel chamadoModel = new ChamadoModel(chamadoDto.titulo(), chamadoDto.descricao(),
+                    chamadoDto.prioridade(), Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)), usuarioLogado,
+                    chamadoDto.patrimonioModel());
+            return ResponseEntity.ok(chamadoRepository.save(chamadoModel));
+        } catch (Exception e) {
+
+            return ResponseEntity.ok(e.getMessage());
         }
-
-        List<ChamadoDto> listaDTO = chamadoRepository.findAll().stream().map(ChamadoDto::new).toList();
-        List<ChamadoModel> listaMODEL = new ArrayList<>();
-
-        for (ChamadoDto chamado : listaDTO) {
-            Optional<ChamadoModel> chamadoOPT = null;
-            chamadoOPT = chamadoRepository.findById(chamado.id());
-            if (chamadoOPT.isPresent()) {
-                try {
-                    chamadoOPT.map(chamadoFinal -> {
-
-                        if (mod.equals("user")) {
-                            if (chamadoFinal.getUsuarioModel().getId() == usuarioLogado.getId()) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (mod.contains("user-")) {
-                            long parmId = Long.parseLong(mod.substring(5, mod.length()));
-                            if (chamadoFinal.getUsuarioModel().getId() == parmId) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (mod.equalsIgnoreCase("userr")) {
-
-                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == usuarioLogado.getId()) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (mod.contains("userr-")) {
-                            long parmId = Long.parseLong(mod.substring(6, mod.length()));
-
-                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == parmId) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (mod.contains("prio-")) {
-                            String prio = mod.substring(5, mod.length());
-
-                            if (chamadoFinal.getPrioridadeChamado() == PrioridadeChamado.valueOf(prio)) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (mod.contains("date-")) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                            String dates = mod.substring(5, mod.length()); // '2024-05-14_2024-07-16'
-                            try {
-                                if (mod.length() > 20) {
-                                    Date date1 = simpleDateFormat.parse(dates.substring(0, 10));
-                                    Date date2 = simpleDateFormat.parse(dates.substring(11, dates.length()));
-                                    if (chamadoFinal.getAbertura().after(date1)
-                                            && chamadoFinal.getAbertura().before(date2)) {
-                                        listaMODEL.add(chamadoFinal);
-                                    }
-
-                                } else {
-                                    Date date1 = simpleDateFormat.parse(dates.substring(1, dates.length()));
-                                    switch (mod.charAt(5)) {
-                                        case '+':
-                                            if (chamadoFinal.getAbertura().after(date1)) {
-                                                listaMODEL.add(chamadoFinal);
-                                            }
-                                            break;
-                                        case '-':
-                                            if (chamadoFinal.getAbertura().before(date1)) {
-                                                listaMODEL.add(chamadoFinal);
-                                            }
-                                            break;
-                                    }
-                                }
-                            } catch (ParseException p) {}
-                        }
-                        return null;
-                    });
-                } catch (NullPointerException n) {
-                }
-            }
-
-        }
-
-        return ResponseEntity.ok(listaMODEL);
     }
+
 }
