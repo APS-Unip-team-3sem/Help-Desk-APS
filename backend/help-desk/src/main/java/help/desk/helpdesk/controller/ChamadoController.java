@@ -127,6 +127,14 @@ public class ChamadoController {
                                 }
                             } catch (ParseException e) {
                             }
+                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("null")) {
+                            try {
+                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+                                if (chamadoFinal.getAbertura().equals(date1)) {
+                                    listaMODEL.add(chamadoFinal);
+                                }
+                            } catch (ParseException e) {
+                            }
                         }
                         return null;
                     });
