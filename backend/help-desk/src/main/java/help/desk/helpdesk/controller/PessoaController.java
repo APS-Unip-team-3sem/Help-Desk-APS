@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import help.desk.helpdesk.dtos.PessoaDto;
@@ -22,13 +23,14 @@ import help.desk.helpdesk.repositories.PessoaRepository;
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("pessoas")
 public class PessoaController {
 	
 	@Autowired
 	PessoaRepository pessoaRepository;
 
 	// POST (Create)
-	@PostMapping("/pessoas")
+	@PostMapping("")
 	public ResponseEntity<PessoaModel> saveProduct(@RequestBody @Valid PessoaDto pessoaDto) {
 		// popular campos do model com dados recebidos no DTO
 		PessoaModel pessoaModel = new PessoaModel();
@@ -37,13 +39,13 @@ public class PessoaController {
 	}
 	
 	//GET ALL (read)
-	@GetMapping("/pessoas")
+	@GetMapping("")
 	public ResponseEntity<List<PessoaModel>> getAllPessoas() {
 		return ResponseEntity.status(HttpStatus.OK).body(pessoaRepository.findAll());
 	}
 	
 	//GET ONE
-	@GetMapping("/pessoas/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<Object> getOneProduct(@PathVariable(value="id") UUID id){
 		Optional<PessoaModel> pessoa = pessoaRepository.findById(id);
 		if(pessoa.isEmpty()) {
@@ -53,7 +55,7 @@ public class PessoaController {
 	}
 	
 	//PUT
-	@PutMapping("/pessoas/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id, @RequestBody @Valid PessoaDto pessoaDto) {
 		Optional<PessoaModel> pessoa = pessoaRepository.findById(id);
 		if (pessoa.isEmpty()) {
