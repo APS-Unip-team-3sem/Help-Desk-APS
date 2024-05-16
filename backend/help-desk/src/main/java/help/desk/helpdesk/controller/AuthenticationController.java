@@ -1,8 +1,5 @@
 package help.desk.helpdesk.controller;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,42 +39,50 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Validated AuthenticationDTO data) {
-        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.nome().toUpperCase(), data.senha());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-
-        var token = tokenService.generateToken((UsuarioModel) auth.getPrincipal());
-        return ResponseEntity.ok(new LoginRespondeDTO(token));
+        if (data.nome() == null || data.senha() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome ou Senha está nulo");
+        }
+        try {
+            
+            UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.nome(),
+            data.senha());
+            var auth = this.authenticationManager.authenticate(usernamePassword);
+            
+            var token = tokenService.generateToken((UsuarioModel) auth.getPrincipal());
+            return ResponseEntity.ok(new LoginRespondeDTO(token));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Login ou Senha incorretos");
+        } 
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Validated RegisterDTO data) {
-        if (this.usuarioRepository.findByNomeIgnoreCase(data.nome()) != null){
-            return ResponseEntity.badRequest().build();
+        if (this.usuarioRepository.findByNomeIgnoreCase(data.nome()) != null) {
+            return ResponseEntity.badRequest().body("Usuário ja existe no sistema");
         }
+        try {
+            if (data.nome().matches("^[a-zA-Z]*$")) {
+                if (data.nome().length() <= 5) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome muito curto!");
+                }
 
-        Pattern digit = Pattern.compile("[0-9]");
-        Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
-        
-        Matcher UhasDigit = digit.matcher(data.nome());
-        Matcher UhasSpecial = special.matcher(data.nome());
+                if (data.senha().length() <= 5) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Senha muito curta!");
+                }
 
-        if(UhasSpecial.find() || UhasDigit.find()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome de usuário contém números e/ou caracteres especiais!");
+                String encryptedSenha = new BCryptPasswordEncoder().encode(data.senha());
+
+                UsuarioModel usuarioModel = new UsuarioModel(data.nome(), encryptedSenha, data.tipo());
+
+                this.usuarioRepository.save(usuarioModel);
+                return ResponseEntity.ok().build();
+            }
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome, Senha ou tipo está nulo");
+        } catch (Exception c) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(c.getMessage());
         }
-        
-        if(data.nome().length() <= 5){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome muito curto!");
-        }
-
-        if(data.senha().length() <= 5){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Senha muito curta!");
-        }
-
-        String encryptedSenha = new BCryptPasswordEncoder().encode(data.senha());
-
-        UsuarioModel usuarioModel = new UsuarioModel(data.nome(), encryptedSenha, data.tipo());
-
-        this.usuarioRepository.save(usuarioModel);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                "Não foi possivel, verifique os dados que estão sendo enviados. Usuário não pode possuir numeros nem caracteres especiais");
     }
 }

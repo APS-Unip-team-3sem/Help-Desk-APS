@@ -1,7 +1,27 @@
 package help.desk.helpdesk.auth.security;
+<<<<<<<<< Temporary merge branch 1
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurations {
+    
+    @Bean
+    public SecurityFilterChain SecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        return httpSecurity
+        .csrf(csrf -> csrf.disable())
+        .build();
+    }
+}
+=========
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +42,7 @@ public class SecurityConfigurations {
     @Autowired
     SecurityFilter securityFilter;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -29,14 +50,18 @@ public class SecurityConfigurations {
 				.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling((exc) -> exc.authenticationEntryPoint(new CustomAuthorizationEntryPoint()))
+
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/chamado/add").hasRole("USER")
-                        .requestMatchers("/chamado/getby/**").hasRole("USER")
-                        .requestMatchers("/chamado/put/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,"/chamado/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"/chamado").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT,"/chamado/{id}").hasRole("USER")
                         .anyRequest().hasRole("ADMIN")
+                            
                 )
+                
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -59,4 +84,3 @@ public class SecurityConfigurations {
         return source;
     }
 }
-

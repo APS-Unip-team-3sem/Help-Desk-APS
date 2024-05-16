@@ -3,6 +3,7 @@ package help.desk.helpdesk.models;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.curso.parkapi.entities.Usuario.Role;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

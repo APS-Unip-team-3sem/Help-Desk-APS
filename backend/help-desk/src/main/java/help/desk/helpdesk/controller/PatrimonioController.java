@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import help.desk.helpdesk.dtos.PatrimonioDto;
@@ -22,13 +23,14 @@ import help.desk.helpdesk.repositories.PatrimonioRepository;
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("patrimonios")
 public class PatrimonioController {
 	
 	@Autowired
 	PatrimonioRepository patrimonioRepository;
 
 	// POST (Create)
-	@PostMapping("/patrimonios")
+	@PostMapping("")
 	public ResponseEntity<PatrimonioModel> saveProduct(@RequestBody @Valid PatrimonioDto patrimonioDto) {
 		// popular campos do model com dados recebidos no DTO
 		PatrimonioModel patrimonioModel = new PatrimonioModel();
@@ -37,13 +39,13 @@ public class PatrimonioController {
 	}
 	
 	//GET ALL (read)
-	@GetMapping("/patrimonios")
+	@GetMapping("")
 	public ResponseEntity<List<PatrimonioModel>> getAllPatrimonios() {
 		return ResponseEntity.status(HttpStatus.OK).body(patrimonioRepository.findAll());
 	}
 	
 	//GET ONE
-	@GetMapping("/patrimonios/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<Object> getOneProduct(@PathVariable(value="id") UUID id){
 		Optional<PatrimonioModel> patrimonio = patrimonioRepository.findById(id);
 		if(patrimonio.isEmpty()) {
@@ -53,7 +55,7 @@ public class PatrimonioController {
 	}
 	
 	//PUT
-	@PutMapping("/patrimonios/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id, @RequestBody @Valid PatrimonioDto patrimonioDto) {
 		Optional<PatrimonioModel> patrimonio = patrimonioRepository.findById(id);
 		if (patrimonio.isEmpty()) {
