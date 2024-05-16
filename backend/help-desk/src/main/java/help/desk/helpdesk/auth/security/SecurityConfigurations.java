@@ -1,5 +1,4 @@
 package help.desk.helpdesk.auth.security;
-<<<<<<<<< Temporary merge branch 1
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,7 @@ public class SecurityConfigurations {
         .build();
     }
 }
-=========
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
