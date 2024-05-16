@@ -29,11 +29,10 @@ public class UsuarioController {
     @GetMapping("/{nome}")
     private ResponseEntity<?> getByName(@PathVariable("nome") @Valid String nome){
         try {
-            
             UsuarioModelDTO user = this.usuarioRepository.getIdByNomeIgnoreCase(nome);
             return ResponseEntity.ok(user.id());
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar o usuário");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar o usuário: " + nome);
         }
     } 
 }

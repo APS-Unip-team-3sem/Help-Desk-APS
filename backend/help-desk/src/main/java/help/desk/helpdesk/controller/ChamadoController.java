@@ -64,84 +64,76 @@ public class ChamadoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi especificado o que buscar");
         }
 
-        List<ChamadoDto> listaDTO = chamadoRepository.findAll().stream().map(ChamadoDto::new).toList();
+        List<ChamadoModel> listaTodos = chamadoRepository.findAll().stream().map(ChamadoModel::new).toList();
         List<ChamadoModel> listaMODEL = new ArrayList<>();
 
-        for (ChamadoDto chamado : listaDTO) {
-            Optional<ChamadoModel> chamadoOPT = chamadoRepository.findById(chamado.id());
-            if (chamadoOPT.isPresent()) {
-                try {
-                    chamadoOPT.map(chamadoFinal -> {
+        for (ChamadoModel chamadoFinal : listaTodos) {
+            try {
+                if (tag.equalsIgnoreCase("user") && value.equalsIgnoreCase("null") && mod.equals("null")) {
+                    if (chamadoFinal.getUsuarioModel().getId() == usuarioLogado.getId()) {
+                        listaMODEL.add(chamadoFinal);
+                    }
+                } else if (tag.equalsIgnoreCase("user") && mod.equalsIgnoreCase("null")) {
+                    if (chamadoFinal.getUsuarioModel().getId() == Long.parseLong(value)) {
+                        listaMODEL.add(chamadoFinal);
+                    }
+                } else if (tag.equalsIgnoreCase("tech") && value.equalsIgnoreCase("null")
+                        && mod.equalsIgnoreCase("null")) {
 
-                        if (tag.equalsIgnoreCase("user") && value.equalsIgnoreCase("null") && mod.equals("null")) {
-                            if (chamadoFinal.getUsuarioModel().getId() == usuarioLogado.getId()) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (tag.equalsIgnoreCase("user") && mod.equalsIgnoreCase("null")) {
-                            if (chamadoFinal.getUsuarioModel().getId() == Long.parseLong(value)) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (tag.equalsIgnoreCase("tech") && value.equalsIgnoreCase("null")
-                                && mod.equalsIgnoreCase("null")) {
-
-                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == usuarioLogado.getId()) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (tag.equalsIgnoreCase("tech") && mod.equalsIgnoreCase("null")) {
-                            if (chamadoFinal.getUsuarioModelResponsavel().getId() == Long.parseLong(value)) {
-                                listaMODEL.add(chamadoFinal);
-                            }
-                        } else if (tag.equalsIgnoreCase("prior") && mod.equalsIgnoreCase("null")) {
-                            try {
-                                if (chamadoFinal.getPrioridadeChamado() == PrioridadeChamado
-                                        .valueOf(value.toUpperCase())) {
-                                    listaMODEL.add(chamadoFinal);
-                                }
-                            } catch (IllegalArgumentException e) {
-                            }
-                        } else if (tag.equalsIgnoreCase("dates") && mod.equalsIgnoreCase("null")) {
-                            String[] dates = value.split("[_]");
-                            try {
-                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(dates[0]);
-                                Date date2 = new SimpleDateFormat("yyyy-MM-dd").parse(dates[1]);
-                                if (chamadoFinal.getAbertura().after(date1)
-                                        && chamadoFinal.getAbertura().before(date2)) {
-                                    listaMODEL.add(chamadoFinal);
-
-                                }
-                            } catch (ParseException p) {
-                            }
-                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("past")) {
-                            try {
-                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
-                                if (chamadoFinal.getAbertura().before(date1)) {
-                                    listaMODEL.add(chamadoFinal);
-                                }
-                            } catch (ParseException e) {
-                            }
-                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("future")) {
-                            try {
-                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
-                                if (chamadoFinal.getAbertura().after(date1)) {
-                                    listaMODEL.add(chamadoFinal);
-                                }
-                            } catch (ParseException e) {
-                            }
-                        } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("null")) {
-                            try {
-                                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
-                                if (chamadoFinal.getAbertura().equals(date1)) {
-                                    listaMODEL.add(chamadoFinal);
-                                }
-                            } catch (ParseException e) {
-                            }
+                    if (chamadoFinal.getUsuarioModelResponsavel().getId() == usuarioLogado.getId()) {
+                        listaMODEL.add(chamadoFinal);
+                    }
+                } else if (tag.equalsIgnoreCase("tech") && mod.equalsIgnoreCase("null")) {
+                    if (chamadoFinal.getUsuarioModelResponsavel().getId() == Long.parseLong(value)) {
+                        listaMODEL.add(chamadoFinal);
+                    }
+                } else if (tag.equalsIgnoreCase("prior") && mod.equalsIgnoreCase("null")) {
+                    try {
+                        if (chamadoFinal.getPrioridadeChamado() == PrioridadeChamado
+                                .valueOf(value.toUpperCase())) {
+                            listaMODEL.add(chamadoFinal);
                         }
-                        return null;
-                    });
-                } catch (NullPointerException n) {
-                }
-            }
+                    } catch (IllegalArgumentException e) {
+                    }
+                } else if (tag.equalsIgnoreCase("dates") && mod.equalsIgnoreCase("null")) {
+                    String[] dates = value.split("[_]");
+                    try {
+                        Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(dates[0]);
+                        Date date2 = new SimpleDateFormat("yyyy-MM-dd").parse(dates[1]);
+                        if (chamadoFinal.getAbertura().after(date1)
+                                && chamadoFinal.getAbertura().before(date2)) {
+                            listaMODEL.add(chamadoFinal);
 
+                        }
+                    } catch (ParseException p) {
+                    }
+                } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("past")) {
+                    try {
+                        Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+                        if (chamadoFinal.getAbertura().before(date1)) {
+                            listaMODEL.add(chamadoFinal);
+                        }
+                    } catch (ParseException e) {
+                    }
+                } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("future")) {
+                    try {
+                        Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+                        if (chamadoFinal.getAbertura().after(date1)) {
+                            listaMODEL.add(chamadoFinal);
+                        }
+                    } catch (ParseException e) {
+                    }
+                } else if (tag.equalsIgnoreCase("date") && mod.equalsIgnoreCase("null")) {
+                    try {
+                        Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+                        if (chamadoFinal.getAbertura().equals(date1)) {
+                            listaMODEL.add(chamadoFinal);
+                        }
+                    } catch (ParseException e) {
+                    }
+                }
+            } catch (NullPointerException n) {
+            }
         }
 
         return ResponseEntity.ok(listaMODEL);
@@ -151,21 +143,25 @@ public class ChamadoController {
     private ResponseEntity<?> putChamado(@RequestBody ChamadoDto newChamado, @PathVariable("id") @Valid UUID id) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
+        try {
 
-        Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
-        ChamadoModel chamadoModel = new ChamadoModel(chamado);
+            Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
+            ChamadoModel chamadoModel = new ChamadoModel(chamado);
 
-        if ((usuariomodel.getTipousuario() == TipoUsuario.ADMIN ||
-                chamadoModel.getUsuarioModel().getId() == usuariomodel.getId()) &&
-                chamadoModel.getStatusChamado() == StatusChamado.ABERTO) {
+            if ((usuariomodel.getTipousuario() == TipoUsuario.ADMIN ||
+                    chamadoModel.getUsuarioModel().getId() == usuariomodel.getId()) &&
+                    chamadoModel.getStatusChamado() == StatusChamado.ABERTO) {
 
-            if (chamado.isPresent()) {
-                chamadoModel.setTitulo(newChamado.titulo());
-                chamadoModel.setDescricao(newChamado.descricao());
-                chamadoModel.setPrioridadeChamado(newChamado.prioridade());
-                chamadoRepository.save(chamadoModel);
-                return ResponseEntity.ok().body("Chamado atualizado com sucesso!");
+                if (chamado.isPresent()) {
+                    chamadoModel.setTitulo(newChamado.titulo());
+                    chamadoModel.setDescricao(newChamado.descricao());
+                    chamadoModel.setPrioridadeChamado(newChamado.prioridade());
+                    chamadoRepository.save(chamadoModel);
+                    return ResponseEntity.ok().body("Chamado atualizado com sucesso!");
+                }
             }
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
     }
@@ -193,7 +189,6 @@ public class ChamadoController {
                 }
             }
         } catch (NullPointerException e) {
-
             return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
                     .body("Chamado pode ser fechado apenas pelo seu responsável");
         }
@@ -204,28 +199,33 @@ public class ChamadoController {
     private ResponseEntity<?> initChamado(@PathVariable("id") @Valid UUID id) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
+        try {
 
-        Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
-        ChamadoModel chamadoModel = new ChamadoModel(chamado);
+            Optional<ChamadoModel> chamado = chamadoRepository.findById(id);
+            ChamadoModel chamadoModel = new ChamadoModel(chamado);
 
-        if (chamado.isPresent()) {
-            if (chamadoModel.getStatusChamado() == StatusChamado.FECHADO) {
-                return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS).body("Chamado ja foi fechado");
+            if (chamado.isPresent()) {
+                if (chamadoModel.getStatusChamado() == StatusChamado.FECHADO) {
+                    return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
+                            .body("Chamado ja foi fechado");
 
-            } else if (chamadoModel.getStatusChamado() == StatusChamado.ANDAMENTO
-                    && chamadoModel.getUsuarioModelResponsavel().getId() == usuariomodel.getId()) {
-                return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS).body("Chamado ja iniciado");
+                } else if (chamadoModel.getStatusChamado() == StatusChamado.ANDAMENTO
+                        && chamadoModel.getUsuarioModelResponsavel().getId() == usuariomodel.getId()) {
+                    return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS).body("Chamado ja iniciado");
 
-            } else if (chamadoModel.getStatusChamado() == StatusChamado.ANDAMENTO) {
-                return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
-                        .body("Chamado ja iniciado por outro responsável");
-            } else {
-                chamadoModel.setStatusChamado(StatusChamado.ANDAMENTO);
-                chamadoModel.setUsuarioModelResponsavel(usuariomodel);
-                chamadoRepository.save(chamadoModel);
-                return ResponseEntity.status(HttpStatus.OK).body("Chamado atribuido com sucesso!");
+                } else if (chamadoModel.getStatusChamado() == StatusChamado.ANDAMENTO) {
+                    return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
+                            .body("Chamado ja iniciado por outro responsável");
+                } else {
+                    chamadoModel.setStatusChamado(StatusChamado.ANDAMENTO);
+                    chamadoModel.setUsuarioModelResponsavel(usuariomodel);
+                    chamadoRepository.save(chamadoModel);
+                    return ResponseEntity.status(HttpStatus.OK).body("Chamado atribuido com sucesso!");
+                }
+
             }
-
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chamado inexistente ou inacessível");
     }

@@ -42,13 +42,17 @@ public class AuthenticationController {
         if (data.nome() == null || data.senha() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome ou Senha está nulo");
         }
-
-        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.nome(),
-                data.senha());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-
-        var token = tokenService.generateToken((UsuarioModel) auth.getPrincipal());
-        return ResponseEntity.ok(new LoginRespondeDTO(token));
+        try {
+            
+            UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.nome(),
+            data.senha());
+            var auth = this.authenticationManager.authenticate(usernamePassword);
+            
+            var token = tokenService.generateToken((UsuarioModel) auth.getPrincipal());
+            return ResponseEntity.ok(new LoginRespondeDTO(token));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Login ou Senha incorretos");
+        } 
     }
 
     @PostMapping("/register")
@@ -57,26 +61,28 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body("Usuário ja existe no sistema");
         }
         try {
-            if (data.nome().matches("^[a-zA-Z]*$")){
+            if (data.nome().matches("^[a-zA-Z]*$")) {
                 if (data.nome().length() <= 5) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome muito curto!");
-            }
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome muito curto!");
+                }
 
-            if (data.senha().length() <= 5) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Senha muito curta!");
+                if (data.senha().length() <= 5) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Senha muito curta!");
+                }
+
+                String encryptedSenha = new BCryptPasswordEncoder().encode(data.senha());
+
+                UsuarioModel usuarioModel = new UsuarioModel(data.nome(), encryptedSenha, data.tipo());
+
+                this.usuarioRepository.save(usuarioModel);
+                return ResponseEntity.ok().build();
             }
-            
-            
-            String encryptedSenha = new BCryptPasswordEncoder().encode(data.senha());
-            
-            UsuarioModel usuarioModel = new UsuarioModel(data.nome(), encryptedSenha, data.tipo());
-            
-            this.usuarioRepository.save(usuarioModel);
-            return ResponseEntity.ok().build();
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome, Senha ou tipo está nulo");
+        } catch (Exception c) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(c.getMessage());
         }
-    } catch (NullPointerException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome, Senha ou tipo está nulo");
-    }
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel, verifique os dados que estão sendo enviados. Usuário não pode possuir numeros nem caracteres especiais");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                "Não foi possivel, verifique os dados que estão sendo enviados. Usuário não pode possuir numeros nem caracteres especiais");
     }
 }
