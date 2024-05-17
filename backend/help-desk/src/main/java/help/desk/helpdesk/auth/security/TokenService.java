@@ -22,13 +22,13 @@ public class TokenService {
     public String generateToken(UsuarioModel usuarioModel) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(this.secret);
-            
+
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(usuarioModel.getNome())
-                    .withClaim("id",usuarioModel.getId())
-                    .withClaim("nome",usuarioModel.getNome())
-                    .withClaim("tipo",String.valueOf(usuarioModel.getTipousuario()))
+                    .withClaim("id", usuarioModel.getId())
+                    .withClaim("nome", usuarioModel.getNome())
+                    .withClaim("tipo", String.valueOf(usuarioModel.getTipousuario()))
                     .withExpiresAt(this.genExpDate())
                     .sign(algorithm);
             return token;

@@ -10,8 +10,8 @@ interface LoginResponse {
 export const login = async (nome: string, senha: string): Promise<LoginResponse> => {
     try {
         const response = await axios.post('http://localhost:9000/auth/login', {
-            username: nome,
-            password: senha
+            nome: nome,
+            senha: senha
         }, {
             headers: {
                 'Content-Type': 'application/json'
