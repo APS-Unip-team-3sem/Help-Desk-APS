@@ -22,7 +22,7 @@ const Team: React.FC = () => {
                             <TeamMember
                                 name="Letícia Milan"
                                 title="Dev Fullstack & Data Scientist"
-                                imageSrc="https://media.licdn.com/dms/image/D4D03AQH9F2VpYFHzzg/profile-displayphoto-shrink_400_400/0/1696355731013?e=1720656000&v=beta&t=r3hP1crVBRqKMRih_JIdlXLmPMWrOTO9aFgikZLQNOw"
+                                imageSrc="https://media.licdn.com/dms/image/D4D03AQE-Sy-7Mh5kWQ/profile-displayphoto-shrink_400_400/0/1715452376192?e=1721260800&v=beta&t=23J96UK57iWyQnF43uWjJJB_FPYMuKBZcACbm13JDLw"
                                 socialLinks={{
                                     linkedin: 'https://www.linkedin.com/in/leticia-milan/',
                                     github: 'https://github.com/LeticiaMilan',

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; 
-import { register } from '../../api/auth'; // Importa a função register da sua API Axios
+import { register } from '../../api/auth';
 import Brand from "../../components/LandingPage/Brand/Brand";
 import Button from "../../components/LandingPage/Button/Button";
 import Input from "../../components/LandingPage/Input/Input";
@@ -10,66 +9,28 @@ import GoogleIcon from "../../components/LandingPage/Icons/GoogleIcon";
 const SignUp: React.FC = () => {
   const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
-  const [tipo, setTipo] = useState<'USER'>('USER');
-  const [isEmpresa, setIsEmpresa] = useState(false);
-  const [cnpj, setCnpj] = useState('');
+  const [tipo, setTipo] = useState('');
+  const [isTecnico, setIsTecnico] = useState(false);
+  const [cpfCnpj, setCpfCnpj] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      // Usa a função register API Axios para enviar os dados para o backend
-      await register(nome, senha, tipo);
-      // Registro bem-sucedido: redireciona para a página de login
-      navigate('/signin');
-      alert('Conta criada com sucesso!');
-    } catch (error) {
-      // Erro de registro: exibe mensagem de erro
-      setError('Erro ao criar conta. Verifique os dados e tente novamente.');
-      console.error('Erro ao fazer registro:', error);
-    }
-  };
-
   const handleTipoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsEmpresa(e.target.checked);
-    setTipo('USER'); 
+    setIsTecnico(e.target.checked);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:9000/auth/register', {
-        username: nome,
-        password: senha, 
-        userType: tipo, 
-      });
-  
-      if (response.status === 200) {
-        // código para lidar com o registro bem-sucedido
-
-        // Redirecionar para a página de login
+        const response = await register(nome, senha, isTecnico ? 'ADMIN' : 'USER'); // Define o tipo como 'ADMIN' se for técnico, caso contrário, define como 'USER'
+        console.log('Sucesso ao logar:', response);
+        console.log('Token:', response.token);
+        console.log('Tipo:', response.tipo);
+        console.log('CPF/CNPJ:', response.cpfCnpj);
         navigate('/signin');
-        alert('Conta criada com sucesso!');
-
-        //MOSTRAR TOKEN
-        console.log('Token:', response.data.token);
-
-        // EXIBIR NOME DO USUÁRIO E TIPO
-        console.log('Nome:', response.data.nome);
-        console.log('Tipo:', response.data.tipo);
-      } else {
-        // código para lidar com erros de registro
-
-        // Exibe a mensagem de erro retornada pelo servidor
-        setError(response.data.message);
-      }
     } catch (error) {
-      console.error(error);
-      // código para lidar com erros de rede
-      setError('Erro ao criar conta. Verifique os dados e tente novamente.');
+        console.error('Falha de registro:', error);
+        setError('Erro ao criar conta. Verifique os dados e tente novamente.');
     }
   };
 
@@ -95,9 +56,9 @@ const SignUp: React.FC = () => {
               </p>
             </div>
           </div>
-          <form onSubmit={handleSubmit} className='mt-8 space-y-5'>
+          <form onSubmit={handleRegister} className='mt-8 space-y-5'>
             <div>
-              <label className='font-medium'>{isEmpresa ? 'Nome da empresa' : 'Nome de usuário'}</label>
+              <label className='font-medium'>Nome de usuário</label>
               <Input
                 type='text'
                 value={nome}
@@ -120,25 +81,23 @@ const SignUp: React.FC = () => {
               <label className='flex items-center'>
                 <input
                   type='checkbox'
-                  checked={isEmpresa}
+                  checked={isTecnico}
                   onChange={handleTipoChange}
                   className='mr-2'
                 />
-                Registrar como empresa
+                Registrar como técnico
               </label>
             </div>
-            {isEmpresa && (
-              <div>
-                <label className='font-medium'>CNPJ</label>
-                <Input
-                  type='text'
-                  value={cnpj}
-                  onChange={(e) => setCnpj(e.target.value)}
-                  required={isEmpresa}
-                  className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
-                />
-              </div>
-            )}
+            <div>
+              <label className='font-medium'>{isTecnico ? 'CPF' : 'CNPJ'}</label>
+              <Input
+                type='text'
+                value={cpfCnpj}
+                onChange={(e) => setCpfCnpj(e.target.value)}
+                required
+                className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
+              />
+            </div>
             {error && <p className="text-red-500">{error}</p>}
             <Button type='submit' className='w-full text-gray-800 bg-gray-100 hover:bg-gray-200 ring-offset-2 focus:ring rounded-lg'>
               Criar conta

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../api/auth'; // Importe a função login do arquivo auth.ts
+import { login } from '../../api/auth';
 import Brand from '../../components/LandingPage/Brand/Brand';
 import Button from '../../components/LandingPage/Button/Button';
 import Input from '../../components/LandingPage/Input/Input';
@@ -10,38 +10,22 @@ const SignIn: React.FC = () => {
     const [nome, setNome] = useState('');
     const [senha, setSenha] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Objeto para navegação
+    const navigate = useNavigate();
 
-    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-
         try {
-            const response = await login(nome, senha); // Use a função login definida em auth.ts
-
-            // Exibir a resposta no console
-            console.log('Resposta do servidor:', response);
-
-            // Verifique se a resposta contém o token
-            if (response.token) {
-                // Armazene o token no localStorage (ou outro local seguro)
-                localStorage.setItem('token', response.token);
-
-                // Login bem-sucedido: redirecionar para a página do dashboard
-                navigate('/dashboard');
-
-                console.log('Usuário logado:', response);
-            } else {
-                setError('Token não encontrado na resposta');
-            }
+            const response = await login(nome, senha);
+            console.log('Sucesso ao logar:', response);
+            console.log('Token:', response.token);
+            navigate('/dashboard');
         } catch (error) {
-            // Erro de login: exibe mensagem de erro
-            setError('Credenciais inválidas. Por favor, verifique seu nome de usuário e senha.');
-            console.error('Erro ao fazer login:', error);
+            console.error('Falha no login:', error);
+            setError('Falha no login. Verifique suas credenciais.');
         }
     };
 
     const handleContinueWithGoogle = () => {
-        // Exemplo de navegação para o dashboard
         window.location.href = '/dashboard';
     };
 
@@ -82,7 +66,7 @@ const SignIn: React.FC = () => {
                         <div>
                             <label className="font-medium">Senha</label>
                             <Input
-                                type="password"
+                                type="current-password"
                                 value={senha}
                                 onChange={(e) => setSenha(e.target.value)}
                                 required
