@@ -6,23 +6,24 @@ const CreateTicket: React.FC = () => {
     const [titulo, setTitulo] = useState('');
     const [descricao, setDescricao] = useState('');
     const [prioridade, setPrioridade] = useState('BAIXA');
-    const [patrimonioId, setPatrimonioId] = useState('');
+    // const [patrimonioId, setPatrimonioId] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('token'); // Supondo que o token JWT esteja armazenado no localStorage
+        const token = localStorage.getItem('token'); 
 
         try {
             const response = await addChamado(token!, {
                 titulo,
                 descricao,
                 prioridade,
-                patrimonioModel: { id: patrimonioId }
+                // patrimonioModel: { id: patrimonioId }
             });
             console.log(response.data);
             // Redireciona para a página de detalhes do chamado
             if (response.data && response.data.id) {
+                console.error('Chamado criado com sucesso: ', response.data);
                 navigate(`/ticket/${response.data.id}`);
             } else {
                 console.error('ID do chamado não encontrado na resposta:', response.data);
@@ -51,10 +52,7 @@ const CreateTicket: React.FC = () => {
                     <option value="ALTA">Alta</option>
                 </select>
             </div>
-            <div>
-                <label>Patrimônio ID</label>
-                <input type="text" value={patrimonioId} onChange={(e) => setPatrimonioId(e.target.value)} required />
-            </div>
+            
             <button type="submit">Criar Chamado</button>
         </form>
     );

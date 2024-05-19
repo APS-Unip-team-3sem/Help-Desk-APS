@@ -5,10 +5,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+import help.desk.helpdesk.models.Usuario.UsuarioModel;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,6 +28,10 @@ public class PatrimonioModel implements Serializable {
 	private Date data_aquisicao;
 	private String localizacao;
 	private BigDecimal valor;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "usuario_id", referencedColumnName = "id")
+	private UsuarioModel usuario;
 	
 	public UUID getIdPatrimonio() {
 		return idPatrimonio;
