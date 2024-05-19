@@ -6,10 +6,10 @@ const API_URL = 'http://localhost:9000/auth';
 export const login = async (nome: string, senha: string) => {
     try {
         const response = await axios.post(`${API_URL}/login`, { nome, senha });
-        const { token, user } = response.data; 
+        const { token, user, userType } = response.data; // Obtém o userType da resposta
         setAuthToken(token); 
         localStorage.setItem('user', JSON.stringify(user)); 
-        return { token, user };
+        return { token, user, userType }; // Retorna o userType junto com o token e o usuário
     } catch (error) {
         console.error('Erro de login:', error);
         throw error;

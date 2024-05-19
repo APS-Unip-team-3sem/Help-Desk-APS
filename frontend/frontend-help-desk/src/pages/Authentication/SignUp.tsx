@@ -7,10 +7,10 @@ import Input from "../../components/LandingPage/Input/Input";
 import GoogleIcon from "../../components/LandingPage/Icons/GoogleIcon";
 
 const SignUp: React.FC = () => {
-  const [nome, setNome] = useState('');
+  const [nomeUsuario, setNomeUsuario] = useState('');
   const [senha, setSenha] = useState('');
-  const [tipo, setTipo] = useState('');
   const [isTecnico, setIsTecnico] = useState(false);
+  const [nome, setNome] = useState('');
   const [cpfCnpj, setCpfCnpj] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -22,10 +22,11 @@ const SignUp: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await register(nome, senha, isTecnico ? 'ADMIN' : 'USER'); // Define o tipo como 'ADMIN' se for técnico, caso contrário, define como 'USER'
+        const response = await register(nomeUsuario, senha, isTecnico ? 'ADMIN' : 'USER'); // Define o tipo como 'ADMIN' se for técnico, caso contrário, define como 'USER'
         console.log('Sucesso ao logar:', response);
         console.log('Token:', response.token);
         console.log('Tipo:', response.tipo);
+        console.log('Nome:', response.nome);
         console.log('CPF/CNPJ:', response.cpfCnpj);
         navigate('/signin');
     } catch (error) {
@@ -61,8 +62,8 @@ const SignUp: React.FC = () => {
               <label className='font-medium'>Nome de usuário</label>
               <Input
                 type='text'
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                value={nomeUsuario}
+                onChange={(e) => setNomeUsuario(e.target.value)}
                 required
                 className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
               />
@@ -89,15 +90,38 @@ const SignUp: React.FC = () => {
               </label>
             </div>
             <div>
-              <label className='font-medium'>{isTecnico ? 'CPF' : 'CNPJ'}</label>
+              <label className='font-medium'>{isTecnico ? 'Nome do Técnico' : 'Nome da Empresa'}</label>
               <Input
                 type='text'
-                value={cpfCnpj}
-                onChange={(e) => setCpfCnpj(e.target.value)}
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
                 required
                 className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
               />
             </div>
+            {isTecnico ? (
+              <div>
+                <label className='font-medium'>CPF</label>
+                <Input
+                  type='text'
+                  value={cpfCnpj}
+                  onChange={(e) => setCpfCnpj(e.target.value)}
+                  required
+                  className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
+                />
+              </div>
+            ) : (
+              <div>
+                <label className='font-medium'>CNPJ</label>
+                <Input
+                  type='text'
+                  value={cpfCnpj}
+                  onChange={(e) => setCpfCnpj(e.target.value)}
+                  required
+                  className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
+                />
+              </div>
+            )}
             {error && <p className="text-red-500">{error}</p>}
             <Button type='submit' className='w-full text-gray-800 bg-gray-100 hover:bg-gray-200 ring-offset-2 focus:ring rounded-lg'>
               Criar conta
