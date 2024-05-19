@@ -6,7 +6,10 @@ const API_URL = 'http://localhost:9000/auth';
 export const login = async (nome: string, senha: string) => {
     try {
         const response = await axios.post(`${API_URL}/login`, { nome, senha });
-        return response.data; // Retorna a data diretamente
+        const { token, user } = response.data; 
+        setAuthToken(token); 
+        localStorage.setItem('user', JSON.stringify(user)); 
+        return { token, user };
     } catch (error) {
         console.error('Erro de login:', error);
         throw error;
@@ -44,6 +47,11 @@ const setAuthToken = (token: string | null) => {
     }
 };
 
+// // Função para salvar o nome do usuario no localStorage após o login
+// export const setUserNome = (nome: string) => {
+//     localStorage.setItem('nome', nome);
+// };
+
 // Função para logout
 const logout = () => {
     setAuthToken(null);
@@ -52,7 +60,12 @@ const logout = () => {
 // Função para fazer requisições autenticadas
 const getProtectedData = async () => {
     try {
-        const response = await api.get('/protected'); // Altere para a rota protegida que deseja acessar
+        const token = localStorage.getItem('token'); 
+        if (!token) {
+            throw new Error('Token not found');
+        }
+        setAuthToken(token); 
+        const response = await api.get('/dashboard');
         return response.data;
     } catch (error) {
         console.error('Protected route error:', error);
@@ -61,115 +74,3 @@ const getProtectedData = async () => {
 };
 
 export { logout, getProtectedData, setAuthToken, api };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const login = async (nome: string, senha: string) => {
-//     try {
-//         const response = await fetch('http://localhost:9000/auth/login', {
-//             method: 'POST',
-//             mode: 'cors',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({ nome, senha }),
-//         });
-        
-//         if (!response.ok) {
-//             throw new Error('Erro ao fazer login: ' + response.statusText);
-//         }
-        
-//         const data = await response.json();
-//         console.log(data);
-//         return data;
-//     } catch (error) {
-//         // Tratamento de erro (pode incluir exibição de mensagem de erro)
-//         console.error(error);
-//         throw error;
-//     }
-// };
-
-// export { login };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import axios from 'axios';
-
-// const API_URL = 'http://localhost:9000';
-
-// // export const login = async (nome: string, senha: string) => {
-// //     try {
-// //         const response = await axios.post(`${API_URL}/auth/login`, { nome, senha });
-// //         return response.data;
-// //     } catch (error) {
-// //         console.error("Erro ao fazer login", error);
-// //         throw error;
-// //     }
-// // };
-
-// export const login = async (nome: string, senha: string) => {
-//     try {
-//         const response = await axios.post(`${API_URL}/auth/login`, { nome, senha });
-//         return response.data; // Retorna a data diretamente
-//     } catch (error) {
-//         console.error("Erro ao fazer login", error);
-//         throw error;
-//     }
-// };
-
-// export const register = async (nome: string, senha: string, tipo: string) => {
-//     try {
-//         const response = await axios.post(`${API_URL}/auth/register`, { nome, senha, tipo });
-//         return response.data;
-//     } catch (error) {
-//         console.error("Erro ao fazer registro", error);
-//         throw error;
-//     }
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-// const api = axios.create({
-//     baseURL: 'http://localhost:9000/auth',
-// });
-
-// export const login = (nome: string, senha: string) =>
-//     api.post('/login', { nome, senha });
-
-// export const register = (nome: string, senha: string, tipo: string) =>
-//     api.post('/register', { nome, senha, tipo });
-
-
-
-

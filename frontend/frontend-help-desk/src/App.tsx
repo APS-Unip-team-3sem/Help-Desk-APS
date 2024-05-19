@@ -17,6 +17,8 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import Home from './pages/HomePage/Home';
+import CreateTicket from './components/Ticket/CreateTicket';
+import TicketDetails from './components/Ticket/TicketDetails';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -98,6 +100,25 @@ function App() {
             </>
           }
         />
+        <Route 
+          path="/ticket/create" 
+          element={
+            <>
+              <PageTitle title="Criar Ticket | DeskTail" />
+              <CreateTicket />
+            </>
+          } 
+          />
+          {/* Ticket (id do ticket)  */}
+          <Route 
+          path="/ticket/:id"
+          element={
+            <>
+              <PageTitle title="Ticket | DeskTail" />
+              <TicketDetails />
+            </>
+          }
+          />
         <Route
           path="/chart"
           element={

@@ -67,7 +67,7 @@ public class PatrimonioController {
 	}
 	
 	//DELETE
-	@DeleteMapping("/products/{id}")
+	@DeleteMapping("/{id}") // removendo "/products" para corrigir o endpoint
 	public ResponseEntity<Object> deleteProduct(@PathVariable(value="id") UUID id) {
 		Optional<PatrimonioModel> patrimonio = patrimonioRepository.findById(id);
 		if(patrimonio.isEmpty()) {

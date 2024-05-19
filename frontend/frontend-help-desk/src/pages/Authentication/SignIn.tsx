@@ -18,6 +18,9 @@ const SignIn: React.FC = () => {
             const response = await login(nome, senha);
             console.log('Sucesso ao logar:', response);
             console.log('Token:', response.token);
+
+            // Armazenar informações do usuário no localStorage (opcional)
+            localStorage.setItem('user', JSON.stringify(response.user));
             navigate('/dashboard');
         } catch (error) {
             console.error('Falha no login:', error);

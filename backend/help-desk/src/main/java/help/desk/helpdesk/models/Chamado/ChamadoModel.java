@@ -62,7 +62,7 @@ public class ChamadoModel {
     private UsuarioModel usuarioModel;
     
     @ManyToOne
-    @JoinColumn(name = "id_resposavel")
+    @JoinColumn(name = "id_responsavel") // corrigindo palavra responsavel
     private UsuarioModel usuarioModelResponsavel;
 
     public ChamadoModel(String titulo, String descricao, PrioridadeChamado prioridade, Date abertura, UsuarioModel usuarioModel, PatrimonioModel patrimonioModel){

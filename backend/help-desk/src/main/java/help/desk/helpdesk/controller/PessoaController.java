@@ -67,7 +67,7 @@ public class PessoaController {
 	}
 	
 	//DELETE
-	@DeleteMapping("/products/{id}")
+	@DeleteMapping("/{id}")  // removendo "/products" para corrigir o endpoint
 	public ResponseEntity<Object> deleteProduct(@PathVariable(value="id") UUID id) {
 		Optional<PessoaModel> pessoa = pessoaRepository.findById(id);
 		if(pessoa.isEmpty()) {
