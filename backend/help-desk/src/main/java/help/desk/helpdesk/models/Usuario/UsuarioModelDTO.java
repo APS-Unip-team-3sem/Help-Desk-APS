@@ -1,5 +1,8 @@
 package help.desk.helpdesk.models.Usuario;
-public record UsuarioModelDTO(long id, String nome) {
+
+import java.util.UUID;
+
+public record UsuarioModelDTO(UUID id, String nome) {
     public UsuarioModelDTO(UsuarioModel usuarioModel){
         this(usuarioModel.getId(), usuarioModel.getNome());
     }

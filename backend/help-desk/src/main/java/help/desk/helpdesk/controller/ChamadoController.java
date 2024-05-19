@@ -74,7 +74,7 @@ public class ChamadoController {
                         listaMODEL.add(chamadoFinal);
                     }
                 } else if (tag.equalsIgnoreCase("user") && mod.equalsIgnoreCase("null")) {
-                    if (chamadoFinal.getUsuarioModel().getId() == Long.parseLong(value)) {
+                    if (chamadoFinal.getUsuarioModel().getId() == UUID.fromString(value)) {
                         listaMODEL.add(chamadoFinal);
                     }
                 } else if (tag.equalsIgnoreCase("tech") && value.equalsIgnoreCase("null")
@@ -84,7 +84,7 @@ public class ChamadoController {
                         listaMODEL.add(chamadoFinal);
                     }
                 } else if (tag.equalsIgnoreCase("tech") && mod.equalsIgnoreCase("null")) {
-                    if (chamadoFinal.getUsuarioModelResponsavel().getId() == Long.parseLong(value)) {
+                    if (chamadoFinal.getUsuarioModelResponsavel().getId() == UUID.fromString(value)) {
                         listaMODEL.add(chamadoFinal);
                     }
                 } else if (tag.equalsIgnoreCase("prior") && mod.equalsIgnoreCase("null")) {

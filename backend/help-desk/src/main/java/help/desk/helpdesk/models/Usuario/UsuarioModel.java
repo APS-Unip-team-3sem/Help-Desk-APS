@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.Collection;
 
 @Table(name = "usuario")
@@ -30,7 +31,7 @@ import java.util.Collection;
 public class UsuarioModel implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private UUID id;
 
     @Column(nullable = false,unique = true)
     private String nome;
@@ -40,7 +41,7 @@ public class UsuarioModel implements UserDetails{
     private TipoUsuario tipousuario;
 
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
     public String getNome() {

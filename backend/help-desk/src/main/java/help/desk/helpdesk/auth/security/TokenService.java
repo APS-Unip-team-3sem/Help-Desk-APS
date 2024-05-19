@@ -26,7 +26,7 @@ public class TokenService {
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(usuarioModel.getNome())
-                    .withClaim("id",usuarioModel.getId())
+                    .withClaim("id",usuarioModel.getId().toString())
                     .withClaim("nome",usuarioModel.getNome())
                     .withClaim("tipo",String.valueOf(usuarioModel.getTipousuario()))
                     .withExpiresAt(this.genExpDate())

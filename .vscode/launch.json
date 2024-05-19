@@ -9,6 +9,16 @@
             "projectName": "help-desk",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-HelpDeskApplication<help.desk-help-desk>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "help.desk.helpdesk.HelpDeskApplication",
+            "projectName": "help.desk-help-desk",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

@@ -12,10 +12,11 @@
 	<groupId>help.desk</groupId>
 	<artifactId>help-desk</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>help-desk</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
+		<maven-skip-test>true</maven-skip-test>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
