@@ -13,10 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import help.desk.helpdesk.auth.security.TokenService;
+import help.desk.helpdesk.models.PatrimonioModel;
+import help.desk.helpdesk.models.PessoaModel;
 import help.desk.helpdesk.models.Usuario.AuthenticationDTO;
 import help.desk.helpdesk.models.Usuario.LoginRespondeDTO;
 import help.desk.helpdesk.models.Usuario.RegisterDTO;
+import help.desk.helpdesk.models.Usuario.TipoUsuario;
 import help.desk.helpdesk.models.Usuario.UsuarioModel;
+import help.desk.helpdesk.repositories.PatrimonioRepository;
+import help.desk.helpdesk.repositories.PessoaRepository;
 import help.desk.helpdesk.repositories.UsuarioRepository;
 
 @RestController
@@ -31,6 +36,12 @@ public class AuthenticationController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private PatrimonioRepository patrimonioRepository;
+
+    @Autowired
+    private PessoaRepository pessoaRepository;
 
     public AuthenticationController(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -75,6 +86,15 @@ public class AuthenticationController {
                 UsuarioModel usuarioModel = new UsuarioModel(data.nome(), encryptedSenha, data.tipo());
 
                 this.usuarioRepository.save(usuarioModel);
+
+                UsuarioModel usuarioModel1 = (UsuarioModel) usuarioRepository.findByNomeIgnoreCase(data.nome());
+                if (data.tipo() == TipoUsuario.USER){
+                    PatrimonioModel patrimonio = new PatrimonioModel(usuarioModel1.getId(), usuarioModel1.getNome(),data.nomeInteiro(), data.cadastro());
+                    this.patrimonioRepository.save(patrimonio);
+                } else if(data.tipo() == TipoUsuario.ADMIN){
+                    PessoaModel pessoaModel = new PessoaModel(usuarioModel1.getId(), usuarioModel1.getNome(),data.nomeInteiro(), data.cadastro());
+                    pessoaRepository.save(pessoaModel);
+                }
                 return ResponseEntity.ok().build();
             }
         } catch (NullPointerException e) {
