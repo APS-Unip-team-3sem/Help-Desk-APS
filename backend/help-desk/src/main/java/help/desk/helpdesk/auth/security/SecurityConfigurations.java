@@ -29,7 +29,7 @@ public class SecurityConfigurations {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .cors((cors) -> cors
-				.configurationSource(corsConfigurationSource()))
+                .configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling((exc) -> exc.authenticationEntryPoint(new CustomAuthorizationEntryPoint()))
@@ -37,13 +37,14 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/chamado/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST,"/chamado").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT,"/chamado/{id}").hasRole("USER")
-                        .anyRequest().hasRole("ADMIN")
-                            
+                        .requestMatchers(HttpMethod.PUT,"/chamado/e/").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/chamado/i/").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/patrimonios/").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+                        .anyRequest().hasRole("USER")
+
                 )
-                
+
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
