@@ -99,7 +99,7 @@ const TicketDetails: React.FC = () => {
         try {
             const response = await initChamado(token, id!);
             setAssinado(true);
-            setAssinadoPor(response.data.usuarioModelResponsavel.nome); // response.data.usuarioModelResponsavel.nome
+            setAssinadoPor(response.data.usuarioModelResponsavel ? response.data.usuarioModelResponsavel.nome : ''); // response.data.usuarioModelResponsavel.nome
         } catch (error) {
             console.error('Erro ao assinar o chamado:', error);
         }
@@ -226,7 +226,7 @@ const TicketDetails: React.FC = () => {
                         </span>
 
                         <label htmlFor="tecnico" className="block font-semibold mt-5">Assinado por:</label>
-                        <span className="text-sm text-gray-500">{chamado.usuarioModelResponsavel.nome}</span>
+                        <span className="text-sm text-gray-500">{chamado.usuarioModelResponsavel ? chamado.usuarioModelResponsavel.nome : ''}</span>
 
                         <div className="px-8 py-4 bg-gray-200 text-center">
                             <button
