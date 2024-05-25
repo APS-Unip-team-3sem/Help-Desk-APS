@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { login, logout } from '../../api/auth';
+import { getUserById } from '../../api/userdata';
 import axios from 'axios';
 
 interface User {
@@ -8,27 +9,42 @@ interface User {
   tipousuario: string;
 }
 
-const DropdownUser = () => {
+const DropdownUser: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const [userData, setUserData] = useState<User | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
   
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(''); 
-        setUserData(response.data); // Define os dados do usuário no estado
-      } catch (error) {
-        console.error('Erro ao obter dados do usuário:', error);
-      }
+    const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('Token não encontrado');
+            return;
+        }
+
+        try {
+            const response = await getUserById(token, id!);
+            if (response.data) {
+                setUser(response.data);
+                
+            } else {
+                setError('Usuário não encontrado');
+            }
+        } catch (error) {
+            setError('Erro ao carregar os detalhes do usuário');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    fetchUserData();
-  }, []);
+    fetchUser();
+}, [id]);
 
   // close on click outside
   useEffect(() => {
@@ -59,6 +75,14 @@ const DropdownUser = () => {
   const handleLogout = () => {
     logout(); 
   };
+  
+  if (loading) {
+    return <div className="text-center mt-8">Carregando...</div>;
+  }
+
+  if (error) {
+      return <div className="text-center mt-8 text-red-500">{error}</div>;
+  }
 
   return (
     <div className="relative">
@@ -71,18 +95,20 @@ const DropdownUser = () => {
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {/* nome do usuario logado */}
-            {userData && userData.nome} {/* Exibe o nome do usuário logado */}
+            {user && user.nome} {/* Exibe o nome do usuário logado */}
           </span>
           {/* tipo de usuario logado USER ou ADMIN (se for user EMPRESA se for admin TÉCNICO) */}
           <span className="block text-xs">
-            {userData && (userData.tipousuario === 'USER' ? 'USER' : 'EMPRESA')} {/* Exibe o tipo de usuário logado */}
+             {/* Exibe o tipo de usuário logado */}
+            {user && user.tipousuario === 'USER' ? 'Empresa' : 'Técnico'}
           </span>
         </span>
 
         <span className="h-12 w-12 flex items-center justify-center rounded-full bg-black text-white">
           {/* primeira letra do nome do usuario logado ao invés da letra A */}
           <span className="text-xl font-bold">
-            {userData && userData.nome.charAt(0).toUpperCase()} {/* Exibe a primeira letra do nome do usuário logado */}
+            {/* Exibe a primeira letra do nome do usuário logado */}
+            {user && user.nome.charAt(0)} {/* Exibe a primeira letra do nome do usuário logado */}
           </span>
         </span>
 

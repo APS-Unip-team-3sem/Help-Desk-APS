@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+const api = axios.create({
+    baseURL: 'http://localhost:9000',
+});
 // Endpoint para buscar todos os usuários
 
 const getAllUsers = async () => {
@@ -24,5 +27,14 @@ const getUserByName = async (nome: string) => {
         throw error;
     }
 };
+
+// Para buscar informações de usuário por id:
+
+export const getUserById = (token: string, id: string) =>
+    api.get(`/usuario/g/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 
 export { getAllUsers, getUserByName };

@@ -185,7 +185,7 @@ public class ChamadoController {
                     return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
                             .body("Chamado já está fechado");
 
-                } else if (chamadoModel.getUsuarioModelResponsavel().getId() == usuariomodel.getId()) {
+                } else /*if (chamadoModel.getUsuarioModelResponsavel().getId() == usuariomodel.getId()) */{
                     chamadoModel.setStatusChamado(StatusChamado.FECHADO);
                     chamadoModel.setFechamento(Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)));
                     chamadoRepository.save(chamadoModel);

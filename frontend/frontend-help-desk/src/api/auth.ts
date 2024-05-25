@@ -55,6 +55,7 @@ const setAuthToken = (token: string | null) => {
 // Função para logout
 const logout = () => {
     setAuthToken(null);
+    localStorage.removeItem('user'); // Remove os dados do usuário do localStorage
 };
 
 // Função para fazer requisições autenticadas
