@@ -147,6 +147,15 @@ function App() {
             </>
           }
         />
+        <Route
+          path="/calendario"
+          element={
+            <>
+              <PageTitle title="Calendário | DeskTail" />
+              <Calendar />
+            </>
+          }
+        />
         {/* <Route
           path="/calendar"
           element={

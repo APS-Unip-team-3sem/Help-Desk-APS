@@ -1,43 +1,40 @@
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../layout/DefaultLayout';
 
 const Calendar = () => {
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="Calendar" />
 
-      {/* <!-- ====== Calendar Section Start ====== --> */}
       <div className="w-full max-w-full rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <table className="w-full">
           <thead>
             <tr className="grid grid-cols-7 rounded-t-sm bg-primary text-white">
               <th className="flex h-15 items-center justify-center rounded-tl-sm p-1 text-xs font-semibold sm:text-base xl:p-5">
-                <span className="hidden lg:block"> Sunday </span>
-                <span className="block lg:hidden"> Sun </span>
+                <span className="hidden lg:block"> Domingo </span>
+                <span className="block lg:hidden"> Dom </span>
               </th>
               <th className="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5">
-                <span className="hidden lg:block"> Monday </span>
-                <span className="block lg:hidden"> Mon </span>
+                <span className="hidden lg:block"> Segunda </span>
+                <span className="block lg:hidden"> Seg </span>
               </th>
               <th className="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5">
-                <span className="hidden lg:block"> Tuesday </span>
-                <span className="block lg:hidden"> Tue </span>
+                <span className="hidden lg:block"> Terça </span>
+                <span className="block lg:hidden"> Ter </span>
               </th>
               <th className="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5">
-                <span className="hidden lg:block"> Wednesday </span>
-                <span className="block lg:hidden"> Wed </span>
+                <span className="hidden lg:block"> Quarta </span>
+                <span className="block lg:hidden"> Qua </span>
               </th>
               <th className="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5">
-                <span className="hidden lg:block"> Thursday </span>
-                <span className="block lg:hidden"> Thur </span>
+                <span className="hidden lg:block"> Quinta </span>
+                <span className="block lg:hidden"> Qui </span>
               </th>
               <th className="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5">
-                <span className="hidden lg:block"> Friday </span>
-                <span className="block lg:hidden"> Fri </span>
+                <span className="hidden lg:block"> Sexta </span>
+                <span className="block lg:hidden"> Sex </span>
               </th>
               <th className="flex h-15 items-center justify-center rounded-tr-sm p-1 text-xs font-semibold sm:text-base xl:p-5">
-                <span className="hidden lg:block"> Saturday </span>
-                <span className="block lg:hidden"> Sat </span>
+                <span className="hidden lg:block"> Sábado </span>
+                <span className="block lg:hidden"> Sab </span>
               </th>
             </tr>
           </thead>
@@ -54,10 +51,10 @@ const Calendar = () => {
                   </span>
                   <div className="event invisible absolute left-2 z-99 mb-1 flex w-[200%] flex-col rounded-sm border-l-[3px] border-primary bg-gray px-3 py-1 text-left opacity-0 group-hover:visible group-hover:opacity-100 dark:bg-meta-4 md:visible md:w-[190%] md:opacity-100">
                     <span className="event-name text-sm font-semibold text-black dark:text-white">
-                      Redesign Website
+                      Reunião
                     </span>
                     <span className="time text-sm font-medium text-black dark:text-white">
-                      1 Dec - 2 Dec
+                      1 Jun 
                     </span>
                   </div>
                 </div>
@@ -199,10 +196,10 @@ const Calendar = () => {
                   </span>
                   <div className="event invisible absolute left-2 z-99 mb-1 flex w-[300%] flex-col rounded-sm border-l-[3px] border-primary bg-gray px-3 py-1 text-left opacity-0 group-hover:visible group-hover:opacity-100 dark:bg-meta-4 md:visible md:w-[290%] md:opacity-100">
                     <span className="event-name text-sm font-semibold text-black dark:text-white">
-                      App Design
+                      Atualizar sistema
                     </span>
                     <span className="time text-sm font-medium text-black dark:text-white">
-                      25 Dec - 27 Dec
+                      25 Jun - 27 Jun
                     </span>
                   </div>
                 </div>
@@ -238,11 +235,6 @@ const Calendar = () => {
               </td>
               <td className="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31">
                 <span className="font-medium text-black dark:text-white">
-                  31
-                </span>
-              </td>
-              <td className="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31">
-                <span className="font-medium text-black dark:text-white">
                   1
                 </span>
               </td>
@@ -259,6 +251,11 @@ const Calendar = () => {
               <td className="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31">
                 <span className="font-medium text-black dark:text-white">
                   4
+                </span>
+              </td>
+              <td className="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31">
+                <span className="font-medium text-black dark:text-white">
+                  5
                 </span>
               </td>
             </tr>
