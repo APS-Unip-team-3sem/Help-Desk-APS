@@ -6,6 +6,7 @@ import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import Calendar from './pages/Calendar';
+import ToDo from './pages/ToDo';
 import Chart from './pages/Chart';
 import Dashboard from './pages/Dashboard/Dashboard';
 import FormElements from './pages/Form/FormElements';
@@ -153,6 +154,15 @@ function App() {
             <>
               <PageTitle title="Calendário | DeskTail" />
               <Calendar />
+            </>
+          }
+        />
+        <Route
+          path="/to-do-list"
+          element={
+            <>
+              <PageTitle title="To Do List | DeskTail" />
+              <ToDo />
             </>
           }
         />
