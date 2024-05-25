@@ -139,6 +139,32 @@ const TicketDetails: React.FC = () => {
         }
     };
 
+    const handleAssinar = () => {
+        // Lógica para assinar o ticket
+        // Por exemplo, enviar uma requisição para o servidor indicando que o ticket foi assinado
+        setAssinado(true); // Atualiza o estado para refletir que o ticket foi assinado
+        // Set the name of the user who signed the ticket
+        setAssinadoPor("d322c132-d2da-4c9d-a4e8-2f6972b3eea5");
+        const assinar = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Token não encontrado');
+                return;
+            }
+
+            try {
+                const response = await initChamado(token, "e78482ce-e448-4046-a5d6-8054726e36b6");
+                setChamado(response.data);
+            } catch (error) {
+                setError('Erro ao assinar chamado');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        assinar();
+    };
+
     return (
         <>
             <section className="mb-22 lg:text-left">

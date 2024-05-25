@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 import java.util.Collection;
@@ -95,6 +95,16 @@ public class UsuarioModel implements UserDetails{
     @Override
     public String getPassword() {
         return senha;
+    }
+
+    public UsuarioModel(Optional<UsuarioModel> usu){
+        usu.map(usr -> {
+            this.id = usr.getId();
+            this.nome = usr.getNome();
+            this.tipousuario = usr.getTipousuario();
+            this.senha = usr.getSenha();
+            return null;
+        });
     }
     
 }

@@ -1,5 +1,6 @@
 package help.desk.helpdesk.controller;
 
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+import help.desk.helpdesk.models.Usuario.UsuarioModel;
 import help.desk.helpdesk.models.Usuario.UsuarioModelDTO;
 import help.desk.helpdesk.repositories.UsuarioRepository;
 import jakarta.validation.Valid;
@@ -36,4 +38,10 @@ public class UsuarioController {
         }
     } 
 
+    @GetMapping("g/{id}")
+    private ResponseEntity<?> getById(@PathVariable("id") @Valid UUID id){
+        UsuarioModel usu = new UsuarioModel(usuarioRepository.findById(id));
+        
+        return ResponseEntity.ok(new UsuarioModelDTO(id,usu.getNome(),usu.getTipousuario()));
+    }
 }

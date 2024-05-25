@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
+import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
@@ -39,6 +39,7 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/usuario*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/chamado/e/").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/chamado/i/").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/patrimonios/").hasRole("ADMIN")
@@ -62,6 +63,28 @@ public class SecurityConfigurations {
         return new BCryptPasswordEncoder();
     }
 
+    /*@Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    } */
+    
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowCredentials(false);
+        configuration.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    } */
+    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
