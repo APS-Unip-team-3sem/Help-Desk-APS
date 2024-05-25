@@ -17,9 +17,9 @@ export const login = async (nome: string, senha: string) => {
 };
 
 // Função para registro
-export const register = async (nome: string, senha: string, tipo: string) => {
+export const register = async (nome: string, senha: string, tipo: string, nomeInteiro: string, cadastro: string) => {
     try {
-        const response = await axios.post(`${API_URL}/register`, { nome, senha, tipo });
+        const response = await axios.post(`${API_URL}/register`, { nome, senha, tipo, nomeInteiro, cadastro });
         return response.data;
     } catch (error) {
         console.error('Erro de registro:', error);

@@ -7,10 +7,10 @@ import Input from "../../components/LandingPage/Input/Input";
 import GoogleIcon from "../../components/LandingPage/Icons/GoogleIcon";
 
 const SignUp: React.FC = () => {
-  const [nomeUsuario, setNomeUsuario] = useState('');
+  const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
   const [isTecnico, setIsTecnico] = useState(false);
-  const [nome, setNome] = useState('');
+  const [nomeInteiro, setNomeInteiro] = useState('');
   const [cpfCnpj, setCpfCnpj] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -22,12 +22,9 @@ const SignUp: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await register(nomeUsuario, senha, isTecnico ? 'ADMIN' : 'USER'); // Define o tipo como 'ADMIN' se for técnico, caso contrário, define como 'USER'
-        console.log('Sucesso ao logar:', response);
-        console.log('Token:', response.token);
-        console.log('Tipo:', response.tipo);
-        console.log('Nome:', response.nome);
-        console.log('CPF/CNPJ:', response.cpfCnpj);
+        const tipo = isTecnico ? 'ADMIN' : 'USER';
+        const response = await register(nome, senha, tipo, nomeInteiro, cpfCnpj); 
+        console.log('Sucesso ao registrar:', response);
         navigate('/signin');
     } catch (error) {
         console.error('Falha de registro:', error);
@@ -62,8 +59,8 @@ const SignUp: React.FC = () => {
               <label className='font-medium'>Nome de usuário</label>
               <Input
                 type='text'
-                value={nomeUsuario}
-                onChange={(e) => setNomeUsuario(e.target.value)}
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
                 required
                 className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
               />
@@ -93,8 +90,8 @@ const SignUp: React.FC = () => {
               <label className='font-medium'>{isTecnico ? 'Nome do Técnico' : 'Nome da Empresa'}</label>
               <Input
                 type='text'
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                value={nomeInteiro}
+                onChange={(e) => setNomeInteiro(e.target.value)}
                 required
                 className='w-full mt-2 text-gray-300 bg-gray-800 focus:bg-gray-900 focus:border-gray-800'
               />

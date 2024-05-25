@@ -40,7 +40,7 @@ public class PatrimonioController {
 	
 	//GET ALL (read)
 	@GetMapping("")
-	public ResponseEntity<List<PatrimonioModel>> getAllPatrimonios() {
+	public ResponseEntity<?> getAllPatrimonios() {
 		return ResponseEntity.status(HttpStatus.OK).body(patrimonioRepository.findAll());
 	}
 	
@@ -53,7 +53,7 @@ public class PatrimonioController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(patrimonio.get());
 	}
-	
+
 	//PUT
 	@PutMapping("/{id}")
 	public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id, @RequestBody @Valid PatrimonioDto patrimonioDto) {
@@ -76,5 +76,6 @@ public class PatrimonioController {
 		patrimonioRepository.delete(patrimonio.get());
 		return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully.");
 	}
+
 
 }

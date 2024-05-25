@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import help.desk.helpdesk.dtos.ChamadoDto;
+import help.desk.helpdesk.models.PatrimonioModel;
 import help.desk.helpdesk.models.Chamado.ChamadoModel;
 import help.desk.helpdesk.models.Chamado.PrioridadeChamado;
 import help.desk.helpdesk.models.Chamado.StatusChamado;
@@ -22,6 +23,7 @@ import help.desk.helpdesk.models.Usuario.TipoUsuario;
 import help.desk.helpdesk.models.Usuario.UsuarioModel;
 
 import help.desk.helpdesk.repositories.ChamadoRepository;
+import help.desk.helpdesk.repositories.PatrimonioRepository;
 import jakarta.validation.Valid;
 
 import java.text.ParseException;
@@ -40,6 +42,9 @@ public class ChamadoController {
 
     @Autowired
     private ChamadoRepository chamadoRepository;
+
+    @Autowired
+    private PatrimonioRepository patrimonioRepository;
 
     @GetMapping("")
     private ResponseEntity<?> getAllChamados() {
@@ -246,15 +251,17 @@ public class ChamadoController {
     private ResponseEntity<?> addChamado(@RequestBody @Valid ChamadoDto chamadoDto) {
         Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuarioLogado = ((UsuarioModel) authenticantion.getPrincipal());
+        PatrimonioModel patrimonioModel = new PatrimonioModel(patrimonioRepository.findById(usuarioLogado.getId()));
         try {
 
             ChamadoModel chamadoModel = new ChamadoModel(chamadoDto.titulo(), chamadoDto.descricao(),
                     chamadoDto.prioridade(), Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)), usuarioLogado,
-                    chamadoDto.patrimonioModel());
-            return ResponseEntity.ok(chamadoRepository.save(chamadoModel));
+                    patrimonioModel);
+                    chamadoRepository.save(chamadoModel);
+            return ResponseEntity.ok(chamadoModel);
         } catch (Exception e) {
 
-            return ResponseEntity.ok(e.getMessage());
+            return ResponseEntity.ok("addChamado "+e.getMessage());
         }
     }
 
