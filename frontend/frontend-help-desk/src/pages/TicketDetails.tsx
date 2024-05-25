@@ -1,35 +1,83 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DefaultLayout from '../layout/DefaultLayout';
 import TicketList from './TicketList';
 import { Ticket } from '../types/ticket';
 import { exportToExcel } from '../utils/exportUtils'; 
 
 const TicketDetails = () => {
+    const [tickets, setTickets] = useState<Ticket[]>([]);
     const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
     const [selectedDateFilter, setSelectedDateFilter] = useState<string>('creation');
 
-    const tickets: Ticket[] = [
-        {
-            id: 1,
-            title: 'Problema com o E-mail',
-            description: 'Não consigo enviar e-mails',
-            status: 'open',
-            user: 'John Doe',
-            created_at: new Date('2024-09-01'),
-            updated_at: new Date('2024-09-01'),
-        },
-        {
-            id: 2,
-            title: 'Problema com a Internet',
-            description: 'A internet está lenta',
-            status: 'open',
-            user: 'Jane Anonymous',
-            created_at: new Date('2021-09-02'),
-            updated_at: new Date('2021-09-02'),
-        },
-        // Adicione mais tickets conforme necessário
-    ];
+
+    // Carregar os tickets ao montar o componente
+    useEffect(() => {
+        // Carregue os tickets aqui ou defina-os de outra forma
+        const loadedTickets: Ticket[] = [
+            {
+                id: 1234567890,
+                title: 'Problema com o E-mail',
+                description: 'Não consigo enviar e-mails',
+                status: 'ABERTO',
+                user: 'John Doe',
+                created_at: new Date('2024-09-01'),
+                updated_at: new Date('2024-09-01'),
+            },
+            {
+                id: 3412345670987890,
+                title: 'Problema com a Internet',
+                description: 'A internet está lenta',
+                status: 'EM ANDAMENTO',
+                user: 'John Doe',
+                created_at: new Date('2024-09-01'),
+                updated_at: new Date('2024-09-01'),
+            },
+            {
+                id: 2,
+                title: 'Problema com a Internet',
+                description: 'A internet está lenta',
+                status: 'FECHADO',
+                user: 'Jane Anonymous',
+                created_at: new Date('2021-09-02'),
+                updated_at: new Date('2021-09-02'),
+            },
+            // Mais tickets...
+        ];
+        setTickets(loadedTickets);
+        setFilteredTickets(loadedTickets); // Carregar os tickets filtrados inicialmente
+    }, []);
+    
+    // const tickets: Ticket[] = [
+    //     {
+    //         id: 1234567890,
+    //         title: 'Problema com o E-mail',
+    //         description: 'Não consigo enviar e-mails',
+    //         status: 'ABERTO',
+    //         user: 'John Doe',
+    //         created_at: new Date('2024-09-01'),
+    //         updated_at: new Date('2024-09-01'),
+    //     },
+    //     {
+    //         id: 3412345670987890,
+    //         title: 'Problema com a Internet',
+    //         description: 'A internet está lenta',
+    //         status: 'EM ANDAMENTO',
+    //         user: 'John Doe',
+    //         created_at: new Date('2024-09-01'),
+    //         updated_at: new Date('2024-09-01'),
+    //     },
+    //     {
+    //         id: 2,
+    //         title: 'Problema com a Internet',
+    //         description: 'A internet está lenta',
+    //         status: 'FECHADO',
+    //         user: 'Jane Anonymous',
+    //         created_at: new Date('2021-09-02'),
+    //         updated_at: new Date('2021-09-02'),
+    //     },
+    //     // Adicione mais tickets conforme necessário
+    // ];
 
     // Função para filtrar os tickets com base no status selecionado
     const filterTicketsByStatus = (status: string) => {
@@ -56,6 +104,11 @@ const TicketDetails = () => {
 
     // Manipulador de evento para o botão de exportação
     const handleExportButtonClick = () => {
+        // Filtrar os tickets antes de exportar
+        filterTicketsByStatus(selectedStatus);
+        filterTicketsByDate();
+        
+        // Exportar os tickets filtrados
         exportToExcel(filteredTickets);
     };
 
@@ -79,15 +132,15 @@ const TicketDetails = () => {
                             <label htmlFor="status" className="block font-semibold">Status:</label>
                             <select id="status" className="border rounded px-2 py-1" value={selectedStatus} onChange={(e) => { setSelectedStatus(e.target.value); filterTicketsByStatus(e.target.value); }}>
                                 <option value="all">Todos os Tickets</option>
-                                <option value="open">Abertos ou Pendentes</option>
-                                <option value="resolved">Resolvidos ou Fechados</option>
+                                <option value="ABERTO">Abertos ou Pendentes</option>
+                                <option value="FECHADO">Resolvidos ou Fechados</option>
                             </select>
                         </div>
                         
                         {/* Dropdown para filtrar por data */}
                         <div>
                             <label htmlFor="date" className="block font-semibold">Filtrar por Data:</label>
-                            <select id="date" className="border rounded px-2 py-1" value={selectedDateFilter} onChange={(e) => { setSelectedDateFilter(e.target.value); filterTicketsByDate(e.target.value); }}>
+                            <select id="date" className="border rounded px-2 py-1" value={selectedDateFilter} onChange={(e) => { setSelectedDateFilter(e.target.value); filterTicketsByDate(); }}>
                                 <option value="creation">Data de Criação</option>
                                 <option value="modification">Última Modificação</option>
                                 <option value="status">Status</option>

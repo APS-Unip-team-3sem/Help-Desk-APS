@@ -19,6 +19,7 @@ import Buttons from './pages/UiElements/Buttons';
 import Home from './pages/HomePage/Home';
 import CreateTicket from './components/Ticket/CreateTicket';
 import TicketDetails from './components/Ticket/TicketDetails';
+import DropdownUser from './components/Header/DropdownUser';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -134,6 +135,15 @@ function App() {
             <>
               <PageTitle title="Tabelas | DeskTail" />
               <Tables />
+            </>
+          }
+        />
+        <Route
+          path="/usuario/:nome"
+          element={
+            <>
+              <PageTitle title="Usuario | DeskTail" />
+              <DropdownUser />
             </>
           }
         />

@@ -7,7 +7,7 @@ import help.desk.helpdesk.models.Usuario.UsuarioModel;
 import help.desk.helpdesk.models.Usuario.UsuarioModelDTO;
 
 
-public interface UsuarioRepository extends JpaRepository<UsuarioModel,Long>{
+public interface UsuarioRepository extends JpaRepository<UsuarioModel, java.util.UUID>{
     
     UserDetails findByNomeIgnoreCase(String nome);
     UsuarioModelDTO getIdByNomeIgnoreCase(String nome);

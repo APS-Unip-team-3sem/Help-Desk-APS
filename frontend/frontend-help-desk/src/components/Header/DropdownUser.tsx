@@ -1,15 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { Link, useParams } from 'react-router-dom';
+import { login, logout } from '../../api/auth';
+import axios from 'axios';
 
-import UserOne from '../../images/user/user-14.png';
+interface User {
+  nome: string;
+  tipousuario: string;
+}
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { user } = useAuth() || {}; // Obtenha o usuário logado do contexto
+
+  const [userData, setUserData] = useState<User | null>(null);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
+  
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(''); 
+        setUserData(response.data); // Define os dados do usuário no estado
+      } catch (error) {
+        console.error('Erro ao obter dados do usuário:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // close on click outside
   useEffect(() => {
@@ -37,6 +56,10 @@ const DropdownUser = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+  const handleLogout = () => {
+    logout(); 
+  };
+
   return (
     <div className="relative">
       <Link
@@ -47,13 +70,20 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-          {user ? user.nome : 'Nome do Usuário'}
+            {/* nome do usuario logado */}
+            {userData && userData.nome} {/* Exibe o nome do usuário logado */}
           </span>
-          <span className="block text-xs">Developer</span>
+          {/* tipo de usuario logado USER ou ADMIN (se for user EMPRESA se for admin TÉCNICO) */}
+          <span className="block text-xs">
+            {userData && (userData.tipousuario === 'USER' ? 'USER' : 'EMPRESA')} {/* Exibe o tipo de usuário logado */}
+          </span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+        <span className="h-12 w-12 flex items-center justify-center rounded-full bg-black text-white">
+          {/* primeira letra do nome do usuario logado ao invés da letra A */}
+          <span className="text-xl font-bold">
+            {userData && userData.nome.charAt(0).toUpperCase()} {/* Exibe a primeira letra do nome do usuário logado */}
+          </span>
         </span>
 
         <svg
@@ -156,6 +186,7 @@ const DropdownUser = () => {
           </li>
         </ul>
         <Link
+        onClick={handleLogout}
         className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
         to="/signin"
       >

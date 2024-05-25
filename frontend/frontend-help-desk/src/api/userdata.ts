@@ -1,17 +1,28 @@
-// buscar dados do usuario logado
-
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:9000', 
-});
+// Endpoint para buscar todos os usuários
 
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token'); 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+const getAllUsers = async () => {
+    try {
+        const response = await axios.get('http://localhost:9000/usuario/getall');
+        return response.data;
+    } catch (error) {
+        console.error('Erro ao buscar usuários:', error);
+        throw error;
     }
-    return config;
-});
+};
 
-export default api;
+
+// Endpoint para buscar usuário por nome e exibir Id
+
+const getUserByName = async (nome: string) => {
+    try {
+        const response = await axios.get(`http://localhost:9000/usuario/${nome}`);
+        return response.data;
+    } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+        throw error;
+    }
+};
+
+export { getAllUsers, getUserByName };
