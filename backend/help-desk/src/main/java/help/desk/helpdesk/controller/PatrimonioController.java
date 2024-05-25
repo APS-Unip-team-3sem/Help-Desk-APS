@@ -1,6 +1,4 @@
 package help.desk.helpdesk.controller;
-
-import java.util.List;
 import java.util.UUID;
 import java.util.Optional;
 

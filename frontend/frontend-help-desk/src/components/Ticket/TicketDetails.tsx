@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getChamadoById } from '../../api/chamado';
+import { initChamado } from '../../api/chamado';
 import moment from 'moment-timezone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
@@ -111,7 +112,25 @@ const TicketDetails: React.FC = () => {
         // Por exemplo, enviar uma requisição para o servidor indicando que o ticket foi assinado
         setAssinado(true); // Atualiza o estado para refletir que o ticket foi assinado
         // Set the name of the user who signed the ticket
-        setAssinadoPor(chamado.usuarioResponsavelModel.nome);
+        setAssinadoPor("d322c132-d2da-4c9d-a4e8-2f6972b3eea5");
+        const assinar = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Token não encontrado');
+                return;
+            }
+
+            try {
+                const response = await initChamado(token, "e78482ce-e448-4046-a5d6-8054726e36b6");
+                setChamado(response.data);
+            } catch (error) {
+                setError('Erro ao assinar chamado');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        assinar();
     };
 
     return (
