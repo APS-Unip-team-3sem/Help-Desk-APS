@@ -4,11 +4,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import org.springframework.security.core.Authentication;
 
 import help.desk.helpdesk.models.Usuario.UsuarioModel;
 import help.desk.helpdesk.models.Usuario.UsuarioModelDTO;
@@ -43,5 +45,13 @@ public class UsuarioController {
         UsuarioModel usu = new UsuarioModel(usuarioRepository.findById(id));
         
         return ResponseEntity.ok(new UsuarioModelDTO(id,usu.getNome(),usu.getTipousuario()));
+    }
+
+    @GetMapping("/u")
+    private ResponseEntity<?> getLogado(){
+        Authentication authenticantion = SecurityContextHolder.getContext().getAuthentication();
+        UsuarioModel usuariomodel = ((UsuarioModel) authenticantion.getPrincipal());
+
+        return ResponseEntity.ok(new UsuarioModelDTO(usuariomodel.getId(),usuariomodel.getNome(),usuariomodel.getTipousuario()));
     }
 }

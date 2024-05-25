@@ -37,4 +37,28 @@ export const getUserById = (token: string, id: string) =>
         },
     });
 
+// // Endpoint para buscar informações do usuário logado
+// export const getLoggedUser = async (token: string) => {
+//     api.get(`/usuario/u`, {
+//         headers: {
+//             Authorization: `Bearer ${token}`,
+//         },
+//     });
+// };
+
+// Endpoint para buscar informações do usuário logado
+export const getLoggedUser = async (token: string) => {
+    try {
+        const response = await api.get(`/usuario/u`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data; 
+    } catch (error) {
+        console.error('Erro ao buscar informações do usuário logado:', error);
+        throw error;
+    }
+};
+
 export { getAllUsers, getUserByName };

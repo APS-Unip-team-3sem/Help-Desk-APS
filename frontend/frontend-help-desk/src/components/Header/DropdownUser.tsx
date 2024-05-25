@@ -1,17 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { login, logout } from '../../api/auth';
-import { getUserById } from '../../api/userdata';
+import { getUserById, getLoggedUser } from '../../api/userdata';
 import axios from 'axios';
 
-interface User {
-  nome: string;
-  tipousuario: string;
-}
 
 const DropdownUser: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { id } = useParams<{ id: string }>();
+
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,32 +15,30 @@ const DropdownUser: React.FC = () => {
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
   
-
+  // utilizando o getLoggedUser para buscar as informações do usuário logado pelo token:
   useEffect(() => {
-    const fetchUser = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError('Token não encontrado');
-            return;
-        }
-
-        try {
-            const response = await getUserById(token, id!);
-            if (response.data) {
-                setUser(response.data);
-                
-            } else {
-                setError('Usuário não encontrado');
+    const fetchLoggedUser = async () => {
+      const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Token não encontrado');
+                return;
             }
-        } catch (error) {
-            setError('Erro ao carregar os detalhes do usuário');
-        } finally {
-            setLoading(false);
-        }
+      try {
+        const userData = await getLoggedUser(token); // supondo que getLoggedUser retorna um objeto com as informações do usuário
+        setUser(userData);
+        console.log(userData);
+        console.log(user);
+        console.log(token);
+        setLoading(false);
+      } catch (error) {
+        setError("Erro ao carregar informações do usuário");
+        setLoading(false);
+      }
     };
-
-    fetchUser();
-}, [id]);
+  
+    fetchLoggedUser();
+  
+  }, []);
 
   // close on click outside
   useEffect(() => {
@@ -82,7 +76,7 @@ const DropdownUser: React.FC = () => {
 
   if (error) {
       return <div className="text-center mt-8 text-red-500">{error}</div>;
-  }
+  } 
 
   return (
     <div className="relative">
@@ -95,20 +89,22 @@ const DropdownUser: React.FC = () => {
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {/* nome do usuario logado */}
-            {user && user.nome} {/* Exibe o nome do usuário logado */}
+            {user?.nome.toUpperCase()}
           </span>
-          {/* tipo de usuario logado USER ou ADMIN (se for user EMPRESA se for admin TÉCNICO) */}
+          
           <span className="block text-xs">
-             {/* Exibe o tipo de usuário logado */}
-            {user && user.tipousuario === 'USER' ? 'Empresa' : 'Técnico'}
+              {/* Exibe o tipo de usuário logado */}
+              {user?.tipousuario.toLowerCase()}
+            
           </span>
         </span>
 
         <span className="h-12 w-12 flex items-center justify-center rounded-full bg-black text-white">
           {/* primeira letra do nome do usuario logado ao invés da letra A */}
           <span className="text-xl font-bold">
-            {/* Exibe a primeira letra do nome do usuário logado */}
-            {user && user.nome.charAt(0)} {/* Exibe a primeira letra do nome do usuário logado */}
+            {/* Exibe a primeira letra do nome do usuário logado em letra maiuscula */}
+            
+            {user?.nome.charAt(0).toUpperCase()}
           </span>
         </span>
 
