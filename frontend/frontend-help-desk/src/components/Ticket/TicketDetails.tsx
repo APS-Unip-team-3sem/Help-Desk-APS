@@ -228,15 +228,18 @@ const TicketDetails: React.FC = () => {
                         <label htmlFor="tecnico" className="block font-semibold mt-5">Assinado por:</label>
                         <span className="text-sm text-gray-500">{chamado.usuarioModelResponsavel ? chamado.usuarioModelResponsavel.nome : ''}</span>
 
-                        <div className="px-8 py-4 bg-gray-200 text-center">
-                            <button
-                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                                onClick={handleAssinar}
-                            >
-                                Assinar Ticket
-                            </button>
-                        </div>
-                        <div className="px-8 py-4 bg-gray-200 text-center">
+                        {chamado.usuarioModel.tipousuario !== 'USER' && (
+                            <div className="px-8 py-4 bg-gray-200 text-center">
+                                <button
+                                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                    onClick={handleAssinar}
+                                >
+                                    Assinar Ticket
+                                </button>
+                            </div>
+                        )}
+                        {chamado.usuarioModel.tipousuario !== 'USER' && (
+                            <div className="px-8 py-4 bg-gray-200 text-center">
                             <button
                                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                                 onClick={handleFecharChamado}
@@ -244,6 +247,7 @@ const TicketDetails: React.FC = () => {
                                 Fechar Problema
                             </button>
                         </div>
+                        )}
                     </div>
                 </div>
             </div>
