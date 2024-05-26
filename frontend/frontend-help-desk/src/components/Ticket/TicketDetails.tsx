@@ -96,10 +96,10 @@ const TicketDetails: React.FC = () => {
                 return;
             }
             try {
-                // Adicionar o novo comentário ao estado local
-                setComments([...comments, newComment]);
                 // Enviar o novo comentário para o servidor
                 await addComentario(token, { id: id, observacao: newComment });
+                // Buscar novamente os comentários após adicionar um novo comentário
+                fetchComentarios();
                 // Limpar o campo de texto do novo comentário
                 setNewComment('');
             } catch (error) {
@@ -137,21 +137,22 @@ const TicketDetails: React.FC = () => {
 
     const handleAssinar = async () => {
         const token = localStorage.getItem('token');
-
+    
         if (!token) {
             console.error('Token não encontrado');
             return;
         }
-
+    
         try {
             const response = await initChamado(token, id!);
             setAssinado(true);
-            setAssinadoPor(response.data.usuarioModelResponsavel ? response.data.usuarioModelResponsavel.nome : ''); 
             // Atualiza o estado do chamado para refletir a assinatura
             setChamado((prevChamado: any) => ({
                 ...prevChamado,
                 usuarioModelResponsavel: response.data.usuarioModelResponsavel
             }));
+            // Atualiza o estado assinadoPor diretamente
+            setAssinadoPor(response.data.usuarioModelResponsavel ? response.data.usuarioModelResponsavel.nome : ''); 
         } catch (error) {
             console.error('Erro ao assinar o chamado:', error);
         }
@@ -191,6 +192,7 @@ const TicketDetails: React.FC = () => {
         }
     };
 
+    
     return (
         <DefaultLayout>
             <>
@@ -279,7 +281,10 @@ const TicketDetails: React.FC = () => {
                         </span>
 
                         <label htmlFor="tecnico" className="block font-semibold mt-5">Assinado por:</label>
-                        <span className="text-sm text-gray-500">{chamado.usuarioModelResponsavel ? chamado.usuarioModelResponsavel.nome : ''}</span>
+                        <span className="text-sm text-gray-500">
+                        {chamado.usuarioModelResponsavel ? chamado.usuarioModelResponsavel.nome : ''}
+                        
+                        </span>
 
                         <div className="px-8 py-4 bg-gray-200 text-center">
                                 <button
@@ -287,7 +292,9 @@ const TicketDetails: React.FC = () => {
                                     onClick={handleAssinar}
                                     disabled={assinado} // desabilita o botão após assinar
                                 >
-                                    {assinado ? 'Ticket Assinado' : 'Assinar Ticket'}
+                                    {/* {assinado ? 'Ticket Assinado' : 'Assinar Ticket'} */
+                                    }
+                                    Assinar Ticket
                                 </button>
                             </div>
                         <div className="px-8 py-4 bg-gray-200 text-center">
