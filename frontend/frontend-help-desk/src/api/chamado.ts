@@ -16,6 +16,14 @@ export const addChamado = (token: string, chamadoData: any) =>
         },
     });
 
+export const getAllChamados = (token: string) =>
+    api.get('/chamado', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    
+    });
+
 export const updateChamado = (token: string, chamadoId: string, chamadoData: any) =>
     api.put(`/chamado/${chamadoId}`, chamadoData, {
         headers: {

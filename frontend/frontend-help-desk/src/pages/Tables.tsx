@@ -11,7 +11,7 @@ const Tables = () => {
 
       <div className="flex flex-col gap-10">
         <TableTickets />
-        <OpenTicket />
+        {/* <OpenTicket /> */}
         {/* <TableOne />
         <TableTwo />
         <TableThree /> */}

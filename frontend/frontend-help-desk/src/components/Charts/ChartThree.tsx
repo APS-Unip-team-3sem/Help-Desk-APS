@@ -1,67 +1,72 @@
 import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-
-interface ChartThreeState {
-  series: number[];
-}
-
-const options: ApexOptions = {
-  chart: {
-    fontFamily: 'Satoshi, sans-serif',
-    type: 'donut',
-  },
-  colors: ['#22c55e', '#f43f5e', '#eab308'],
-  labels: ['ABERTO', 'FECHADO', 'EM ANDAMENTO'],
-  legend: {
-    show: false,
-    position: 'bottom',
-  },
-
-  plotOptions: {
-    pie: {
-      donut: {
-        size: '65%',
-        background: 'transparent',
-      },
-    },
-  },
-  dataLabels: {
-    enabled: false,
-  },
-  responsive: [
-    {
-      breakpoint: 2600,
-      options: {
-        chart: {
-          width: 380,
-        },
-      },
-    },
-    {
-      breakpoint: 640,
-      options: {
-        chart: {
-          width: 200,
-        },
-      },
-    },
-  ],
-};
+import { getAllChamados } from '../../api/chamado';
 
 const ChartThree: React.FC = () => {
-  const [state, setState] = useState<ChartThreeState>({
-    series: [3, 12, 5],
-  });
+    const [chamados, setChamados] = useState([]);
+    const [series, setSeries] = useState([]);
 
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-      series: [3, 12, 5],
-    }));
+    useEffect(() => {
+        const fetchChamados = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Token não encontrado');
+                return;
+            }
+
+            try {
+                const response = await getAllChamados(token!);
+                if (response.data) {
+                    setChamados(response.data);
+                } else {
+                    console.error('Erro ao carregar os chamados');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar os chamados:', error);
+            }
+        };
+
+        fetchChamados();
+    }, []);
+
+    useEffect(() => {
+        if (chamados.length > 0) {
+            const totalChamados = chamados.length;
+            const abertos = chamados.filter(chamado => chamado.statusChamado === 'ABERTO').length;
+            const fechados = chamados.filter(chamado => chamado.statusChamado === 'FECHADO').length;
+            const emAndamento = chamados.filter(chamado => chamado.statusChamado === 'ANDAMENTO').length;
+
+            const abertosPercentage = (abertos / totalChamados) * 100;
+            const fechadosPercentage = (fechados / totalChamados) * 100;
+            const emAndamentoPercentage = (emAndamento / totalChamados) * 100;
+
+            setSeries([abertosPercentage, fechadosPercentage, emAndamentoPercentage]);
+        }
+    }, [chamados]);
+
+    const options = {
+      chart: {
+          type: 'donut',
+          width: '100%',
+      },
+      labels: ['ABERTO', 'FECHADO', 'ANDAMENTO'],
+      tooltip: {
+          enabled: true,
+          y: {
+              formatter: function (value) {
+                  const totalChamados = chamados.length;
+                  let chamadosDoStatus = 0;
+                  if (value > 0) {
+                      chamadosDoStatus = Math.round((value * totalChamados) / 100);
+                  }
+                  return `<span style="color: white;">${value.toFixed(2)}% | ${chamadosDoStatus} chamados</span>`;
+              }
+          }
+      },
+      colors: ['#22c55e', '#f43f5e', '#eab308'] // Cores personalizadas
   };
-  handleReset;
-
+  
   return (
     <div className="sm:px-7.5 col-span-12 rounded-xl border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-5">
       <div className="mb-3 justify-between gap-4 sm:flex">
@@ -110,15 +115,11 @@ const ChartThree: React.FC = () => {
 
       <div className="mb-2">
         <div id="chartThree" className="mx-auto flex justify-center">
-          <ReactApexChart
-            options={options}
-            series={state.series}
-            type="donut"
-          />
+          <ReactApexChart options={{ ...options, chart: { ...options.chart, type: "donut" } }} series={series} type="donut" width={500} />
         </div>
       </div>
 
-      <div className="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
+      {/* <div className="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
         <div className="sm:w-1/3 w-full px-8">
           <div className="flex w-full items-center">
             <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-green-500"></span>
@@ -147,7 +148,7 @@ const ChartThree: React.FC = () => {
           </div>
         </div>
         
-      </div>
+      </div> */}
     </div>
   );
 };

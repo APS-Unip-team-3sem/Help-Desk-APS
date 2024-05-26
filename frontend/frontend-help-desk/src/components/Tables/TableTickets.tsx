@@ -1,78 +1,67 @@
-import { useState } from 'react';
-import { Package } from '../../types/package';
+import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-const packageData: Package[] = [
-  {
-    codTicket: 123,
-    priority: 'Alta',
-    openDate: new Date('2024-05-12'),
-    status: 'Concluído',
-    userID: 502,
-    technicianID: 501,
-  },
-  {
-    codTicket: 456,
-    priority: 'Média',
-    openDate: new Date('2024-05-12'),
-    status: 'Em andamento',
-    userID: 503,
-    technicianID: 502,
-  },
-  {
-    codTicket: 789,
-    priority: 'Baixa',
-    openDate: new Date('2023-05-15'),
-    status: 'Pendente',
-    userID: 504,
-    technicianID: 503,
-  },
-  {
-    codTicket: 101,
-    priority: 'Alta',
-    openDate: new Date('2024-05-12'),
-    status: 'Concluído',
-    userID: 505,
-    technicianID: 504,
-  },
-  {
-    codTicket: 112,
-    priority: 'Média',
-    openDate: new Date('2024-05-12'),
-    status: 'Em andamento',
-    userID: 506,
-    technicianID: 505,
-  },
-  {
-    codTicket: 131,
-    priority: 'Baixa',
-    openDate: new Date('2024-02-12'),
-    status: 'Pendente',
-    userID: 507,
-    technicianID: 506,
-  },
-];
+import { getAllChamados } from '../../api/chamado';
+import { Link } from 'react-router-dom';
 
 const priorityOrder = {
-  Alta: 3,
-  Média: 2,
-  Baixa: 1
+  ALTA: 3,
+  MEDIA: 2,
+  BAIXA: 1
 };
 
-const formatDate = (date: Date) => {
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+const priorityBadges = {
+  ALTA: 'bg-red-100 text-red-800 px-2 py-1 rounded-sm text-xs',
+  MEDIA: 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded-sm text-xs',
+  BAIXA: 'bg-green-100 text-green-800 px-2 py-1 rounded-sm text-xs'
+};
+
+const statusBadges = {
+  ABERTO: 'bg-green-100 text-green-800 px-2 py-1 rounded-sm text-xs',
+  FECHADO: 'bg-red-100 text-red-800 px-2 py-1 rounded-sm text-xs',
+  ANDAMENTO: 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded-sm text-xs'
+};
+
+const formatDate = (date) => {
+  if (!date || !(date instanceof Date)) {
+    return ''; // Return empty string if date is not valid
+  }
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   return date.toLocaleDateString('pt-BR', options);
 };
 
 const TableTickets = () => {
+  const [chamados, setChamados] = useState([]);
   const [sortBy, setSortBy] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10); // Defina a quantidade de linhas por página
+  const [rowsPerPage] = useState(10); 
   const [filterOption, setFilterOption] = useState('Últimos 30 dias');
+
+  useEffect(() => {
+    const fetchChamados = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token não encontrado');
+        return;
+      }
+
+      try {
+        const response = await getAllChamados(token!);
+        if (response.data) {
+          setChamados(response.data);
+        } else {
+          console.error('Erro ao carregar os chamados');
+        }
+      } catch (error) {
+        console.error('Erro ao carregar os chamados:', error);
+      }
+    };
+
+    fetchChamados();
+  }, []);
 
   // Funções para ir para a próxima página e a página anterior
   const nextPage = () => {
@@ -87,7 +76,7 @@ const TableTickets = () => {
     }
   };
 
-  const handleSort = (field: string) => {
+  const handleSort = (field) => {
     if (field === sortBy) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -96,15 +85,20 @@ const TableTickets = () => {
     }
   };
 
-  const filteredData = packageData.filter(data => {
+  const handleCheckboxChange = (id) => {
+    // Implemente a lógica aqui para lidar com a seleção de linha
+    console.log('Checkbox selecionado:', id);
+  };
+
+  const filteredData = chamados.filter(data => {
     const dataDate = new Date(data.openDate);
     return dataDate >= startDate && dataDate <= endDate;
   });
 
   const sortedData = filteredData.sort((a, b) => {
     if (sortBy === 'openDate') {
-      const dateA = a[sortBy].getTime();
-      const dateB = b[sortBy].getTime();
+      const dateA = new Date(a[sortBy]).getTime();
+      const dateB = new Date(b[sortBy]).getTime();
       const compareValue = dateA > dateB ? 1 : -1;
       return sortDirection === 'asc' ? compareValue : -compareValue;
     } else if (sortBy === 'priority') {
@@ -126,9 +120,9 @@ const TableTickets = () => {
   const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow);
 
   // Função para mudar de página
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleFilterChange = (option: string) => {
+  const handleFilterChange = (option) => {
     setFilterOption(option);
 
     // Atualize as datas de início e término com base na opção de filtro selecionada
@@ -160,7 +154,6 @@ const TableTickets = () => {
         break;
     }
   };
-
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg" style={{ minHeight: '800px' }}>
       <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
@@ -311,11 +304,11 @@ const TableTickets = () => {
           <tr>
             <th scope="col" className="p-4">
               <div className="flex items-center">
-                <input
-                  id="checkbox-all-search"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
+              <input
+                type="checkbox"
+                onChange={(e) => handleCheckboxChange(chamado?.id)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
               </div>
             </th>
             <th scope="col" className="px-6 py-3" onClick={() => handleSort('codTicket')}>
@@ -339,25 +332,34 @@ const TableTickets = () => {
           </tr>
         </thead>
         <tbody>
-        {currentRows.map((data) => (
-          <tr key={data.codTicket} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        {chamados.map(chamado =>  (
+          <tr key={chamado?.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td className="w-4 p-4">
               <div className="flex items-center">
                 <input
-                  id={`checkbox-table-search-${data.codTicket}`}
+                  id={`checkbox-table-search-${chamado?.id}`}
                   type="checkbox"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
               </div>
             </td>
-            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              {data.codTicket}
-            </th>
-            <td className="px-6 py-4">{formatDate(data.openDate)}</td>
-            <td className="px-6 py-4">{data.priority}</td>
-            <td className="px-6 py-4">{data.status}</td>
-            <td className="px-6 py-4">{data.userID}</td>
-            <td className="px-6 py-4">{data.technicianID}</td>
+            <td scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              {/* Usar o componente Link para redirecionar */}
+              <Link to={`/ticket/${chamado?.id}`} className="hover:underline">
+                {chamado?.id}
+              </Link>
+            </td>
+
+            <td className="px-6 py-4">{formatDate(new Date(chamado.abertura))}</td>
+            {/* <td className="px-6 py-4">{chamado.abertura}</td> */}
+            <td className={`px-4 py-2 rounded-lg ${priorityBadges[chamado.prioridadeChamado]}`}>{chamado.prioridadeChamado}</td>
+<td className={`px-4 py-2 rounded-lg ${statusBadges[chamado.statusChamado]}`}>{chamado.statusChamado}</td>
+            <td className="px-6 py-4">{chamado?.usuarioModel.nome}</td>
+            {/* usuario respondavel nome se n tiver colocar N/A: */}
+            <td className="px-6 py-4">
+              {/* {chamado?.usuarioModelResponsavel ? chamado?.usuarioModelResponsavel.nome : 'N/A'} */}
+              {chamado?.usuarioModelResponsavel?.nome || 'N/A'}
+            </td>
           </tr>
         ))}
       </tbody>
