@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DefaultLayout from '../layout/DefaultLayout';
-import TicketList from './TicketList';
+import TicketCard from './TicketCard';
 import { Ticket } from '../types/ticket';
 import { exportToExcel } from '../utils/exportUtils'; 
 import { getChamadoByUser } from '../api/chamado';
@@ -11,8 +11,7 @@ const TicketDetails = () => {
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
     const [selectedDateFilter, setSelectedDateFilter] = useState<string>('creation');
 
-    // Carregar os tickets criados pelo usuario logado ao montar o componente:
-
+    // Carregar os tickets criados pelo usuário logado ao montar o componente:
     useEffect(() => {
         const fetchTickets = async () => {
             const token = localStorage.getItem('token');
@@ -76,7 +75,7 @@ const TicketDetails = () => {
                 {/* Espaço para exibir os tickets */}
                 <div className="col-span-9">
                     {/* Componente para listar os tickets */}
-                    <TicketList tickets={filteredTickets} />
+                    <TicketCard />
                 </div>
                 
                 {/* Coluna à direita com botões de exportação e filtros */}

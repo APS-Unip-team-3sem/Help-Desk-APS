@@ -22,6 +22,8 @@ import CreateTicket from './components/Ticket/CreateTicket';
 import TicketDetails from './components/Ticket/TicketDetails';
 import DropdownUser from './components/Header/DropdownUser';
 import TicketCard from './pages/TicketCard';
+import Base from './components/Base/Base';
+
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -173,6 +175,15 @@ function App() {
             <>
               <PageTitle title="To Do List | DeskTail" />
               <TicketCard />
+            </>
+          }
+        />
+        <Route 
+          path="/base-conhecimento"
+          element={
+            <>
+              <PageTitle title=" Dashboard | DeskTail" />
+              <Base />
             </>
           }
         />
