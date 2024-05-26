@@ -21,6 +21,7 @@ import Home from './pages/HomePage/Home';
 import CreateTicket from './components/Ticket/CreateTicket';
 import TicketDetails from './components/Ticket/TicketDetails';
 import DropdownUser from './components/Header/DropdownUser';
+import TicketCard from './pages/TicketCard';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -163,6 +164,15 @@ function App() {
             <>
               <PageTitle title="To Do List | DeskTail" />
               <ToDo />
+            </>
+          }
+        />
+        <Route 
+          path="ticket/:id"
+          element={
+            <>
+              <PageTitle title="To Do List | DeskTail" />
+              <TicketCard />
             </>
           }
         />

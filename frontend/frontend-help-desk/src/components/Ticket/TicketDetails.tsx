@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getChamadoById, closeChamado, initChamado } from '../../api/chamado';
+import { getChamadoById, closeChamado, initChamado, addComentario, getComentario } from '../../api/chamado';
 import moment from 'moment-timezone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import DefaultLayout from '../../layout/DefaultLayout';
 
 moment.tz.setDefault('America/Sao_Paulo');
 
@@ -31,7 +32,8 @@ const TicketDetails: React.FC = () => {
                 const response = await getChamadoById(token, id!);
                 if (response.data) {
                     setChamado(response.data);
-                    setStartTime(moment(response.data.abertura).subtract(3, 'hours')); 
+                    setStartTime(moment(response.data.abertura).subtract(3, 'hours'));
+                    fetchComentarios(); // Chamada para buscar os comentários ao carregar o chamado
                 } else {
                     setError('Chamado não encontrado');
                 }
@@ -53,6 +55,23 @@ const TicketDetails: React.FC = () => {
         return () => clearInterval(interval);
     }, []);
 
+    // Função para buscar os comentários
+    const fetchComentarios = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token não encontrado');
+            return;
+        }
+        try {
+            const response = await getComentario(token, id!);
+            if (response.data) {
+                setComments(response.data); // Atualiza os comentários no estado local
+            }
+        } catch (error) {
+            console.error('Erro ao buscar comentários:', error);
+        }
+    };
+
     const calculateElapsedTime = (startTime: moment.Moment, currentTime: moment.Moment): number => {
         return currentTime.diff(startTime);
     };
@@ -68,11 +87,24 @@ const TicketDetails: React.FC = () => {
     const elapsedTime = startTime ? calculateElapsedTime(startTime, currentTime) : 0;
     const formattedElapsedTime = formatElapsedTime(elapsedTime);
 
-    const handleCommentSubmit = (e: React.FormEvent) => {
+    const handleCommentSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (newComment.trim()) {
-            setComments([...comments, newComment]);
-            setNewComment('');
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Token não encontrado');
+                return;
+            }
+            try {
+                // Adicionar o novo comentário ao estado local
+                setComments([...comments, newComment]);
+                // Enviar o novo comentário para o servidor
+                await addComentario(token, { id: id, observacao: newComment });
+                // Limpar o campo de texto do novo comentário
+                setNewComment('');
+            } catch (error) {
+                console.error('Erro ao adicionar comentário:', error);
+            }
         }
     };
 
@@ -160,9 +192,10 @@ const TicketDetails: React.FC = () => {
     };
 
     return (
-        <>
-            <section className="mb-22 lg:text-left">
-                <div className="relative overflow-hidden h-[300px] bg-indigo-500">
+        <DefaultLayout>
+            <>
+            <section className=" lg:text-left">
+                <div className="relative overflow-hidden h-[300px] bg-indigo-500 rounded-t-xl">
                     <div className="absolute top-0 right-0 bottom-0 left-0 h-full w-full overflow-hidden">
                         <div className="flex h-full items-center justify-center">
                             <div className="max-w-[800px] px-6 py-6 text-center text-white md:py-0 md:px-12">
@@ -178,7 +211,7 @@ const TicketDetails: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <div className="container w-sm mx-auto grid grid-cols-3 gap-4 bg-white rounded-lg">
+            <div className="container w-sm mx-auto grid grid-cols-3 gap-4 bg-white rounded-b-xl">
                 <div className="col-span-2 p-8">
                     <h2 className="text-lg font-semibold mb-4">
                         {chamado.usuarioModel.nome}
@@ -193,12 +226,12 @@ const TicketDetails: React.FC = () => {
                             <div key={index} className="flex items-start gap-2.5 mb-4 bg-slate-100 rounded-md">
                                 <div className="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
                                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                                        <span className="text-sm font-semibold text-gray-900 dark:text-white">{chamado.usuarioModel.nome}</span>
+                                        <span className="text-sm font-semibold text-gray-900 dark:text-white">{comment.usuarioModel.nome}</span>
                                         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                            {moment().format('HH:mm')}
+                                            {comment.data}
                                         </span>
                                     </div>
-                                    <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{comment}</p>
+                                    <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{comment.observacao}</p>
                                 </div>
                             </div>
                         ))}
@@ -269,6 +302,7 @@ const TicketDetails: React.FC = () => {
                 </div>
             </div>
         </>
+        </DefaultLayout>
     );
 };
 

@@ -1,5 +1,10 @@
 import axios from 'axios';
 
+export interface Chamado {
+    id: number;
+    status: 'ABERTO' | 'FECHADO' | 'EM ANDAMENTO';
+}
+
 const api = axios.create({
     baseURL: 'http://localhost:9000',
 });
@@ -59,3 +64,32 @@ export const closeChamado = (token: string, chamadoId: string) =>
             Authorization: `Bearer ${token}`,
         },
     });
+
+    // Para adicionar comentários:
+
+    // POST URL: 
+    // http://localhost:9000/clevel
+    
+    // BODY
+    // {
+    // "id":"id_do_chamado"
+    // "observacao":"comentario_do_usuario"
+    // }
+    
+    // Para buscar comentários de um chamado
+    
+    // GET URL: http://localhost:9000/clevel/all/id_do_Chamado
+
+    export const addComentario = (token: string, comentarioData: any) =>
+        api.post(`/clevel`, comentarioData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    
+    export const getComentario = (token: string, chamadoId: string) =>
+        api.get(`/clevel/all/${chamadoId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });

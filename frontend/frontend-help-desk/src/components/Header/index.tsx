@@ -4,6 +4,7 @@ import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
 import LogoIcon from '../../images/logo/logo-icon2.png';
 import DarkModeSwitcher from './DarkModeSwitcher';
+import ButtonCreateTicket from './ButtonCreateTicket';
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -106,10 +107,16 @@ const Header = (props: {
             {/* <!-- Notification Menu Area --> */}
             <DropdownNotification />
             {/* <!-- Notification Menu Area --> */}
+            
 
             {/* <!-- Chat Notification Area --> */}
             <DropdownMessage />
             {/* <!-- Chat Notification Area --> */}
+
+             {/* Novo Botão */}
+          
+
+          <ButtonCreateTicket />
           </ul>
 
           {/* <!-- User Area --> */}

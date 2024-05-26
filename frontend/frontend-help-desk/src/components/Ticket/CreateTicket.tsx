@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addChamado } from '../../api/chamado';
+import DefaultLayout from '../../layout/DefaultLayout';
 
 const CreateTicket: React.FC = () => {
     const [titulo, setTitulo] = useState('');
@@ -32,7 +33,8 @@ const CreateTicket: React.FC = () => {
     };
 
     return (
-        <div className="max-w-xl mx-auto mt-8 bg-white rounded-lg overflow-hidden shadow-md">
+        <DefaultLayout>
+            <div className="max-w-xl mx-auto mt-8 bg-white rounded-lg overflow-hidden shadow-md">
             <div className="p-8">
                 <h2 className="text-xl font-semibold mb-4">Abrir um novo Ticket</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,6 +84,7 @@ const CreateTicket: React.FC = () => {
                 </form>
             </div>
         </div>
+        </DefaultLayout>
     );
 };
 

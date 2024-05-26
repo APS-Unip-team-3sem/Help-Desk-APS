@@ -1,9 +1,49 @@
 import DefaultLayout from '../layout/DefaultLayout';
 import CoverOne from '../images/cover/cover-01.png';
+import { getUserById, getLoggedUser } from '../api/userdata';
 
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
-const Profile = () => {
+const Profile: React.FC = () => {
+
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // utilizando o getLoggedUser para buscar as informações do usuário logado pelo token:
+  useEffect(() => {
+    const fetchLoggedUser = async () => {
+      const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Token não encontrado');
+                return;
+            }
+      try {
+        const userData = await getLoggedUser(token); // supondo que getLoggedUser retorna um objeto com as informações do usuário
+        setUser(userData);
+        console.log(userData);
+        console.log(user);
+        console.log(token);
+        setLoading(false);
+      } catch (error) {
+        setError("Erro ao carregar informações do usuário");
+        setLoading(false);
+      }
+    };
+  
+    fetchLoggedUser();
+  
+  }, []);
+  
+  if (loading) {
+    return <div className="text-center mt-8">Carregando...</div>;
+  }
+
+  if (error) {
+      return <div className="text-center mt-8 text-red-500">{error}</div>;
+  } 
+
   return (
     <DefaultLayout>
       <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -47,9 +87,13 @@ const Profile = () => {
           </div>
         </div>
         <div className="px-4 pb-6 text-center  lg:pb-8 xl:pb-11.5">
-          <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-            <div className="">
-              <img src="" alt="" />
+          <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-black/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3 flex justify-center items-center">
+            <div className="d-flex justify-center text-center align-center">
+              <span className=" text-black h-40 w-40  rounded-full flex items-center justify-center text-lg font-semibold">
+                <h1 className="">
+                {user?.nome.charAt(0).toUpperCase()}
+                </h1>
+              </span>
               <label
                 htmlFor="profile"
                 className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
@@ -86,9 +130,9 @@ const Profile = () => {
           </div>
           <div className="mt-4">
             <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-              Nome do usuário
+            {user?.nome.toUpperCase()}
             </h3>
-            <p className="font-medium">Tipo do Usuário</p>
+            <p className="font-medium">{user?.tipousuario.toLowerCase()}</p>
             
 
             

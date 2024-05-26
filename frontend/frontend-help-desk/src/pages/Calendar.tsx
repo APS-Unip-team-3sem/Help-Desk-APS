@@ -4,10 +4,10 @@ const Calendar = () => {
   return (
     <DefaultLayout>
 
-      <div className="w-full max-w-full rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="w-full max-w-full border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark rounded-xl">
         <table className="w-full">
           <thead>
-            <tr className="grid grid-cols-7 rounded-t-sm bg-primary text-white">
+            <tr className="grid grid-cols-7  bg-primary text-white rounded-t-xl">
               <th className="flex h-15 items-center justify-center rounded-tl-sm p-1 text-xs font-semibold sm:text-base xl:p-5">
                 <span className="hidden lg:block"> Domingo </span>
                 <span className="block lg:hidden"> Dom </span>
