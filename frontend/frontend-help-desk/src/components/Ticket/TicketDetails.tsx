@@ -215,9 +215,11 @@ const TicketDetails: React.FC = () => {
             </section>
             <div className="container w-sm mx-auto grid grid-cols-3 gap-4 bg-white rounded-b-xl">
                 <div className="col-span-2 p-8">
-                    <h2 className="text-lg font-semibold mb-4">
-                        {chamado.usuarioModel.nome}
-                        <span className="ml-3">{chamado.abertura}</span>
+                    <h2 className="text-lg mb-4">
+                        <span className="font-semibold">
+                        {chamado.usuarioModel.nome.toUpperCase()}
+                        </span>
+                        <span className="ml-3">às {moment(chamado.abertura).add(3, 'hours').format('HH:mm')}</span>
                     </h2>
                     <div className="space-y-4">
                         <p className="mt-1 text-md text-gray-900 text-justify">{chamado.descricao}</p>
@@ -225,13 +227,17 @@ const TicketDetails: React.FC = () => {
                     <div className="p-8">
                         <h2 className="text-xl font-semibold mb-4"></h2>
                         {comments.map((comment, index) => (
-                            <div key={index} className="flex items-start py-2 px-2 gap-2.5 mb-4 bg-slate-100 rounded-md">
-                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white text-center">{comment.usuarioModel.nome.charAt(0).toUpperCase()}</span>
+                            <div key={index} className={`flex items-start py-2 px-2 gap-2.5 mb-4 bg-slate-100 ${comment.usuarioModel && chamado.usuarioModelResponsavel && comment.usuarioModel.id === chamado.usuarioModelResponsavel.id ? 'rounded-l-lg rounded-t-lg' : 'rounded-r-lg rounded-t-lg'}`}>
+                                {comment.usuarioModel && (
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white text-center">{comment.usuarioModel.nome.charAt(0).toUpperCase()}</span>
+                                )}
                                 <div className="flex flex-col w-full max-w-[320px] leading-1.5 px-2 py-1 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
                                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                                        <span className="text-sm font-semibold text-gray-900 dark:text-white">{comment.usuarioModel.nome}</span>
+                                        {comment.usuarioModel && (
+                                            <span className="text-sm font-semibold text-gray-900 dark:text-white">{comment.usuarioModel.nome.toUpperCase()}</span>
+                                        )}
                                         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                            {comment.data}
+                                            {moment(comment.data).add(3, 'hours').format('HH:mm')}
                                         </span>
                                     </div>
                                     <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{comment.observacao}</p>
